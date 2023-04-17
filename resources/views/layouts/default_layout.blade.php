@@ -1,0 +1,7 @@
+@include('partials.head')
+@include('partials.preloader')
+@include('partials.header')
+@include('partials.sidebar')
+@yield('content')
+@include('partials.footer')
+@include('partials.page-js')

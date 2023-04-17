@@ -6,6 +6,7 @@
     <link href="{{ asset('assets/plugins/datatables.net-buttons-bs5/css/buttons.bootstrap5.min.css') }}" rel="stylesheet" />
     <link rel="stylesheet" href="{{ asset('assets/plugins/toastr/css/toastr.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/plugins/sweetalert2/dist/sweetalert2.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/plugins/bootstrap-datepicker/bootstrap-datepicker.min.css') }}">
 @endpush
 @push('scripts')
     <script src="{{ asset('assets/plugins/datatables.net/js/jquery.dataTables.min.js') }}"></script>
@@ -24,6 +25,7 @@
     <script src="{{ asset('assets/plugins/sweetalert2/dist/sweetalert2.min.js') }}"></script>
     <script src="{{ asset('assets/icons/font-awesome/js/all.min.js') }}"></script>
     <script src="{{ asset('assets/plugins/toastr/js/toastr.min.js') }}"></script>
+    <script src="{{ asset('assets/plugins/bootstrap-datepicker/bootstrap-datepicker.min.js') }}"></script>
     <script>
         let url = '';
         let method = '';
@@ -88,11 +90,13 @@
             ],
         });
 
-        function create() {
-            url = "{{ route('department.store') }}";
-            method = 'POST';
-            $('.modal-header h5').html("Tambah Departemen");
-            $('#basicModal').modal('show');
+        function pdfModal() {
+            $('.modal-body form')[0].reset();
+            $('#pdfModal').modal('show');
+        }
+
+        function excelModal() {
+            $('#pdfModal').modal('show');
         }
 
         function edit(id) {
@@ -165,32 +169,11 @@
             }
         }
         $(document).ready(function() {
-            $('#basicModal').on('hide.bs.modal', function(){
-                $('.modal-body form')[0].reset();
-                $('input[name="_method"]').remove();
-            })
-            $('.modal-body form').on('submit', function(e){
-                e.preventDefault();
-                let formData = new FormData($(this)[0]);
-                formData.append('createdBy', "{{ Auth::user()->name }}");
-                formData.append('updatedBy', "{{ Auth::user()->name }}");
-                $.ajax({
-                    url: getUrl(),
-                    type: getMethod(),
-                    data: formData,
-                    contentType: false,
-                    processData: false,
-                    dataType: "JSON",
-                    success: function(response){
-                        $('#basicModal').modal('hide');
-                        notification(response.status, response.message);
-                        Table.ajax.reload(null, false);
-                    },
-                    error: function(res){
-                        notification(res.responseJSON.status, res.responseJSON.message);
-                    }
-                })
-            })
+            $('.tanggal').datepicker({
+                format: 'yyyy-mm-dd',
+                autoclose: true,
+                todayHighlight: true
+            });
         })
     </script>
 @endpush
@@ -218,6 +201,8 @@
                             <div class="card">
                                 <div class="card-body">
                                     <h5 class="card-title">List Employee Table</h5>
+                                    <button class="btn btn-sm btn-success text-white ml-1 float-right"><i class="fa-solid fa-file-excel"></i> Export Excel</button>
+                                    <button onclick="pdfModal()" class="btn btn-sm btn-danger float-right"><i class="fa-solid fa-file-pdf"></i> Export PDF</button>
                                     <div class="table-responsive">
                                         <table class="table table-striped table-bordered" id="daTable">
                                             <thead>
@@ -245,24 +230,29 @@
         Content body end
     ***********************************-->
     <!-- Modal -->
-    <div class="modal fade" id="basicModal">
+    <div class="modal fade" id="pdfModal">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Modal</h5>
+                    <h5 class="modal-title">Export PDF</h5>
                     <button type="button" class="close" data-dismiss="modal"><span>&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form action="" method="post">
+                    <form target="_blank" action="{{ route('payroll.download.pdf') }}" method="post">
+                        @csrf
                         <div class="form-group">
-                            <label>Departemen</label>
-                            <input type="text" class="form-control" name="nama" placeholder="Nama Departemen" required>
+                            <label for="Awal">Tanggal Awal</label>
+                            <input type="text" id="Awal" class="form-control tanggal" name="start" placeholder="Tanggal Awal" autocomplete="off" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="Akhir">Tanggal Akhir</label>
+                            <input type="text" id="Akhir" class="form-control tanggal" name="akhir" placeholder="Tanggal Akhir" autocomplete="off" required>
                         </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary text-white" data-dismiss="modal">Tutup <i class="fa-solid fa-xmark"></i></button>
-                    <button type="submit" class="btn btn-success text-white">Simpan <i class="fa-solid fa-floppy-disk"></i></button>
+                    <button type="submit" class="btn btn-success text-white">Export <i class="fa-solid fa-file-pdf"></i></button>
                 </form>
                 </div>
             </div>

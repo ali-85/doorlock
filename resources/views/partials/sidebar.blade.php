@@ -5,7 +5,7 @@
     <div class="nk-nav-scroll">
         <ul class="metismenu" id="menu">
             <li>
-                <a href="widgets.html" aria-expanded="false">
+                <a href="{{ route('dashboard') }}" aria-expanded="false">
                     <i class="icon-home menu-icon"></i><span class="nav-text">Dashboard</span>
                 </a>
             </li>
@@ -19,6 +19,7 @@
                     <li><a href="{{ route('department.index') }}"><i class="fa fa-sitemap"></i> Departments</a></li>
                     <li><a href="{{ route('subdepartment.index') }}"><i class="fa fa-sitemap"></i> Sub Departments</a></li>
                     <li><a href="{{ route('employee.index') }}"><i class="icon-people"></i> Employees</a></li>
+                    <li><a href="{{ route('holiday.index') }}"><i class="fa-solid fa-calendar-day"></i> Holidays Date</a></li>
                 </ul>
             </li>
             <li>

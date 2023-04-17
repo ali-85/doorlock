@@ -3,6 +3,7 @@
 use App\Http\Controllers\MasterData\AccountController;
 use App\Http\Controllers\MasterData\DepartementController;
 use App\Http\Controllers\MasterData\EmployeeController;
+use App\Http\Controllers\MasterData\HolidayController;
 use App\Http\Controllers\MasterData\RoleController;
 use App\Http\Controllers\MasterData\SubdepartementController;
 use Illuminate\Support\Facades\Route;
@@ -13,3 +14,4 @@ Route::resource('department', DepartementController::class)->only(['index', 'sto
 Route::resource('subdepartment', SubdepartementController::class)->only(['index', 'store', 'edit', 'update', 'destroy']);
 Route::resource('employee', EmployeeController::class)->only(['index', 'store', 'edit', 'update', 'destroy']);
 Route::get('employe/subdepartement/{id}', [EmployeeController::class, 'getSubdepartement'])->name('employee.subdepartement.option');
+Route::resource('holiday', HolidayController::class)->only(['index', 'store', 'edit', 'update', 'destroy']);

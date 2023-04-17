@@ -8,12 +8,14 @@
     <div class="nav-header" style="background-color: #3F51B5">
         <div class="brand-logo">
             <a href="index.html">
-                <b class="logo-abbr"><img src="{{ asset('dist/images/logo-csp-birumerah.gif') }}" width="55"
-                        alt="Logo"> </b>
-                <span class="logo-compact"><img src="{{ asset('dist/images/logo-csp-birumerah.gif') }}" width="55"
-                        alt="Logo"></span>
+                <b class="logo-abbr">
+                    <h6 class="text-white"><Strong>PT Cahaya Sukses Plastindo</Strong></h6>
+                </b>
+                <span class="logo-compact">
+                    <h6 class="text-white"><Strong>PT Cahaya Sukses Plastindo</Strong></h6>
+                </span>
                 <span class="brand-title">
-                    <img src="{{ asset('dist/images/logo-csp-birumerah.gif') }}" width="55" alt="Brand">
+                    <h6 class="text-white"><Strong>PT Cahaya Sukses Plastindo</Strong></h6>
                 </span>
             </a>
         </div>

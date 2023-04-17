@@ -1,14 +1,12 @@
 @extends('layouts.default_layout')
-@section('title', 'List Employee Payroll')
+@section('title', 'Holiday')
 @push('css')
     <link href="{{ asset('assets/plugins/datatables.net-bs5/css/dataTables.bootstrap5.min.css') }}" rel="stylesheet" />
     <link href="{{ asset('assets/plugins/datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css') }}" rel="stylesheet" />
     <link href="{{ asset('assets/plugins/datatables.net-buttons-bs5/css/buttons.bootstrap5.min.css') }}" rel="stylesheet" />
     <link rel="stylesheet" href="{{ asset('assets/plugins/toastr/css/toastr.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/plugins/sweetalert2/dist/sweetalert2.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/plugins/bootstrap-select/dist/css/bootstrap-select.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/plugins/bootstrap4-datetimepicker/bootstrap-datetimepicker.min.css') }}">
-
+    <link rel="stylesheet" href="{{ asset('assets/plugins/bootstrap-datepicker/bootstrap-datepicker.min.css') }}">
 @endpush
 @push('scripts')
     <script src="{{ asset('assets/plugins/datatables.net/js/jquery.dataTables.min.js') }}"></script>
@@ -27,14 +25,10 @@
     <script src="{{ asset('assets/plugins/sweetalert2/dist/sweetalert2.min.js') }}"></script>
     <script src="{{ asset('assets/icons/font-awesome/js/all.min.js') }}"></script>
     <script src="{{ asset('assets/plugins/toastr/js/toastr.min.js') }}"></script>
-    <script src="{{ asset('assets/plugins/bootstrap-select/dist/js/bootstrap-select.min.js') }}"></script>
-    <script src="{{ asset('assets/plugins/moment/moment.min.js') }}"></script>
-    <script src="{{ asset('assets/plugins/bootstrap4-datetimepicker/bootstrap-datetimepicker.min.js') }}"></script>
+    <script src="{{ asset('assets/plugins/bootstrap-datepicker/bootstrap-datepicker.min.js') }}"></script>
     <script>
         let url = '';
         let method = '';
-        let daTableUrl = "{{ route('payroll.employee.index', ':id') }}";
-        daTableUrl = daTableUrl.replace(':id', "{{ Request::segment(3) }}");
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -48,7 +42,7 @@
             return method;
         }
         var Table = $('#daTable').DataTable({
-            ajax: daTableUrl,
+            ajax: "{{ route('holiday.index') }}",
             processing: true,
             serverSide: true,
             responsive: true,
@@ -58,23 +52,17 @@
                     data: 'DT_RowIndex'
                 },
                 {
-                    data: 'nama'
+                    data: 'dtday'
                 },
                 {
-                    data: 'jam_masuk'
-                },
-                {
-                    data: 'jam_keluar'
-                },
-                {
-                    data: 'lembur'
+                    data: 'txtdescription'
                 },
                 {
                     data: 'action'
                 }
             ],
             columnDefs: [{
-                "targets": [0, 5],
+                "targets": [0, 2],
                 "orderable": false
             }],
             buttons: [
@@ -106,41 +94,32 @@
         });
 
         function create() {
-            url = "{{ route('payroll.employee.store', ':id') }}";
-            url = url.replace(':id', "{{ Request::segment(3) }}");
+            url = "{{ route('holiday.store') }}";
             method = 'POST';
+            $('.modal-header h5').html("Tambah Tanggal Libur");
             $('input[name="_method"]').remove();
             $('.modal-body form')[0].reset();
-            $('.modal-header h5').html("Penambahan atau Pengurangan Gaji");
             $('#basicModal').modal('show');
         }
 
         function edit(id) {
-            let editUrl = "{{ route('payroll.employee.edit', ':id') }}";
+            let editUrl = "{{ route('holiday.edit', ':id') }}";
             editUrl = editUrl.replace(':id', id);
-            url = "{{ route('payroll.employee.update', ':id') }}";
+            url = "{{ route('holiday.update', ':id') }}";
             url = url.replace(':id', id);
             method = "POST";
             $('input[name="_method"]').remove();
             $.get(editUrl, function(res){
-                let leaves = [];
-                $('.modal-header h5').html("Penambahan atau Pengurangan Gaji");
+                $('.modal-header h5').html("Edit Tanggal Libur");
                 $('.modal-body form').append('<input type="hidden" name="_method" value="PUT" />');
-                $('input[name="jam_masuk"]').val(res.data.jam_masuk);
-                $('input[name="jam_Keluar"]').val(res.data.jam_Keluar);
-                $('input[name="keterangan_detail"]').val(res.data.keterangan_detail);
-                $('#Keterangan').selectpicker('val', res.data.keterangan);
-                $.each(res.payrolls, function(idx, val){
-                    leaves.push(val.leave_absence_id);
-                })
-                console.log(leaves);
-                $('#IdLeave').selectpicker('val', leaves);
+                $('input[name="txtdescription"]').val(res.data.txtdescription);
+                $('input[name="dtday"]').val(res.data.dtday);
                 $('#basicModal').modal('show');
             })
         }
 
         function destroy(id) {
-            let deleteUrl = "{{ route('department.destroy', ':id') }}";
+            let deleteUrl = "{{ route('holiday.destroy', ':id') }}";
             deleteUrl = deleteUrl.replace(':id', id);
             swal({
                     title: 'Hapus data ini?',
@@ -195,28 +174,14 @@
             }
         }
         $(document).ready(function() {
-            $('#basicModal').on('hide.bs.modal', function(){
-                $('.modal-body form')[0].reset();
-                $('input[name="_method"]').remove();
-            })
-            $('#IdLeave').selectpicker({
-                liveSearch: true,
-                title: "Pilih Penambahan atau Pengurangan",
-                header: "Pilih Penambahan atau Pengurangan"
-            });
-            $('#Keterangan').selectpicker({
-                liveSearch: true,
-                title: "Pilih Keterangan",
-                header: "Pilih Keterangan"
-            });
-            $('#JamMasuk, #JamKeluar').datetimepicker({
-                sideBySide: true,
-                format: 'Y-MM-DD HH:mm:ss'
+            $('#Tanggal').datepicker({
+                format: 'yyyy-mm-dd',
+                autoclose: true,
+                todayHighlight: true
             });
             $('.modal-body form').on('submit', function(e){
                 e.preventDefault();
                 let formData = new FormData($(this)[0]);
-                formData.append('user_id', "{{ Request::segment(3) }}");
                 formData.append('createdBy', "{{ Auth::user()->name }}");
                 formData.append('updatedBy', "{{ Auth::user()->name }}");
                 $.ajax({
@@ -249,7 +214,7 @@
             <div class="col p-md-0">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="javascript:void(0)">Dashboard</a></li>
-                    <li class="breadcrumb-item active"><a href="javascript:void(0)">List Employee</a></li>
+                    <li class="breadcrumb-item active"><a href="javascript:void(0)">Holiday</a></li>
                 </ol>
             </div>
         </div>
@@ -262,17 +227,15 @@
                         <div class="col">
                             <div class="card">
                                 <div class="card-body">
-                                    <h5 class="card-title">List Employee Table</h5>
-                                    <button class="btn btn-primary float-right" onclick="create()"><i class="icon-plus mr-1"></i> Absensi</button>
+                                    <h5 class="card-title">Holiday Table</h5>
+                                    <button class="btn btn-primary float-right" onclick="create()"><i class="icon-plus mr-1"></i> Holiday</button>
                                     <div class="table-responsive">
                                         <table class="table table-striped table-bordered" id="daTable">
                                             <thead>
                                                 <tr>
                                                     <th>#</th>
-                                                    <th>NAMA</th>
-                                                    <th>MASUK</th>
-                                                    <th>PULANG</th>
-                                                    <th>LEMBUR</th>
+                                                    <th>TANGGAL</th>
+                                                    <th>DESKRIPSI</th>
                                                     <th>AKSI</th>
                                                 </tr>
                                             </thead>
@@ -305,33 +268,12 @@
                 <div class="modal-body">
                     <form action="" method="post">
                         <div class="form-group">
-                            <label for="JamMasuk">Jam Masuk</label>
-                            <input type="text" class="form-control" name="jam_masuk" placeholder="Jam Masuk" id="JamMasuk">
+                            <label for="Tanggal">Tanggal</label>
+                            <input type="text" id="Tanggal" class="form-control" name="dtday" placeholder="Tanggal Libur Nasional" autocomplete="off" required>
                         </div>
                         <div class="form-group">
-                            <label for="JamKeluar">Jam Keluar</label>
-                            <input type="text" class="form-control" name="jam_Keluar" placeholder="Jam Keluar" id="JamKeluar">
-                        </div>
-                        <div class="form-group">
-                            <label for="Keterangan">Keterangan</label>
-                            <select name="keterangan" id="Keterangan" class="form-control">
-                                <option selected disabled>Pilih Keterangan</option>
-                                <option value="hadir">Hadir</option>
-                                <option value="terlambat">Terlambat</option>
-                                <option value="tidak masuk">Tidak Masuk</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="KeteranganDetail">Keterangan Detail</label>
-                            <input type="text" name="keterangan_detail" class="form-control" placeholder="Keterangan Detail" id="KeteranganDetail">
-                        </div>
-                        <div class="form-group">
-                            <label for="IdLeave">Remark</label>
-                            <select name="leave_id[]" id="IdLeave" class="form-control" multiple>
-                                @foreach ($leaves as $item)
-                                    <option value="{{ $item->id }}">{{ $item->remark.' | '.$item->category }}</option>
-                                @endforeach
-                            </select>
+                            <label for="Description">Deskripsi</label>
+                            <input type="text" id="Description" class="form-control" name="txtdescription" placeholder="Lebaran, Natal, ..." required>
                         </div>
                 </div>
                 <div class="modal-footer">

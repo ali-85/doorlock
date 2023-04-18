@@ -110,7 +110,7 @@ class AbsenceController extends BaseController
                 $statFoto = '';
                 $isClose = collectAttendance::where('user_id', $cekRfid->id)
                     ->orderBy('id', 'desc')
-                    ->find();
+                    ->first();
                 // return response()->json(['data' => $isClose->jam_Keluar]);
                 if ($isClose->jam_Keluar) {
                     // return response()->json(['data' => $isClose->jam_Keluar]);

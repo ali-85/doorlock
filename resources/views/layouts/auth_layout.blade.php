@@ -9,7 +9,7 @@
             ***********************************-->
     <div class="nav-header">
         <div class="brand-logo">
-            <a href="index.html">
+            <a href="{{ route('auth.index') }}">
                 <b class="logo-abbr"><img src="{{ asset('dist/images/logo-csp-birumerah.gif') }}" width="55"
                         alt="Logo"> </b>
                 <span class="logo-compact"><img src="{{ asset('dist/images/logo-csp-birumerah.gif') }}" width="55"
@@ -55,7 +55,7 @@
         <div class="nk-nav-scroll">
             <ul class="metismenu" id="menu">
                 <li>
-                    <a href="widgets.html" aria-expanded="false">
+                    <a href="{{ route('auth.index') }}" aria-expanded="false">
                         <i class="icon-home menu-icon"></i><span class="nav-text">Dashboard</span>
                     </a>
                 </li>

@@ -40,6 +40,7 @@ class SalaryTransferExport implements FromView, WithEvents, WithProperties, With
             ->join('memployees AS memp', 'memp.id', '=', 'vp.user_id')
             ->leftJoin('mbanks AS bank', 'bank.id', '=', 'memp.bank_account')
             ->where('memp.payment_mode', $this->mode)
+            ->where('memp.transfer_type', 1)
             ->whereBetween(DB::raw('DATE(vp.jam_masuk)'), [$this->start, $this->end])
             ->groupBy('vp.user_id')
             ->get();

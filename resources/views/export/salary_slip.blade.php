@@ -65,7 +65,7 @@
             </tr>
             @if ($item->lembur > 0)
                 <tr>
-                    <td>Lembur 1</td>
+                    <td><span style="float: left">Lembur 1</span> <span style="float: right">{{ $item->jumlah_lembur }}</span></td>
                     <td align="center">Rp 5.000</td>
                     <td align="center">Rp {{ number_format($item->lembur,0,',','.') }}</td>
                     <td></td>
@@ -83,7 +83,7 @@
                 $ins = json_decode($item->insentif, true);
             @endphp
             @foreach ($ins as $key => $val)
-                @if ($val['category'] != null)                
+                @if ($val['category'] != null)
                 {{ ($val['category'] == 'payroll deductions')?$insentif -= $val['value']:$insentif += $val['value'] }}
                 <tr>
                     <td>{{ $val['remark']; }}</td>
@@ -96,8 +96,8 @@
             <tr>
                 <td style="border: none">Jumlah</td>
                 <td style="border: none"></td>
-                <td style="border: none">Rp {{ number_format(($item->salary+$item->lembur+$item->lembur2+$insentif),0,',','.') }}</td>
-                <td style="border: none">{{ $item->pembayaran == 1?'ATM':'CASH' }}</td>
+                <td align="center" style="border: none">Rp {{ number_format(($item->salary+$item->lembur+$item->lembur2+$insentif),0,',','.') }}</td>
+                <td align="center" style="border: none">{{ $item->pembayaran == 1?'ATM':'CASH' }}</td>
             </tr>
         </table>
         <div class="my"></div>
@@ -119,7 +119,7 @@
                 <td></td>
             </tr>
         </table>
-    </table>        
+    </table>
     @endforeach
 </body>
 

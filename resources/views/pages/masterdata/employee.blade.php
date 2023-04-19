@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="{{ asset('assets/plugins/toastr/css/toastr.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/plugins/sweetalert2/dist/sweetalert2.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/plugins/bootstrap-select/dist/css/bootstrap-select.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/plugins/bootstrap-datepicker/bootstrap-datepicker.min.css') }}">
 @endpush
 @push('scripts')
     <script src="{{ asset('assets/plugins/datatables.net/js/jquery.dataTables.min.js') }}"></script>
@@ -29,6 +30,7 @@
     <script src="{{ asset('assets/js/jquery.qrcode.js') }}"></script>
     <script src="{{ asset('assets/js/qrcode.js') }}"></script>
     <script src="{{ asset('assets/js/html2canvas.js') }}"></script>
+    <script src="{{ asset('assets/plugins/bootstrap-datepicker/bootstrap-datepicker.min.js') }}"></script>
     <script>
         let url = '';
         let method = '';
@@ -130,6 +132,10 @@
             $('.modal-header h5').html("Tambah Pegawai");
             $('#basicModal').modal('show');
         }
+        function exportExcel(){
+            $('.modal-header h5').html("Export Absensi Pegawai");
+            $('#exportModal').modal('show');
+        }
 
         function edit(id) {
             let editUrl = "{{ route('employee.edit', ':id') }}";
@@ -168,6 +174,7 @@
                 $('select#Shift').val(res.data.shiftcode_id);
                 $('select#Alamat').val(res.data.alamat);
                 $('select#Pembayaran').val(res.data.transfer_type);
+                $('select#ModePembayaran').selectpicker('val', res.data.payment_mode);
                 $('input[name="noHandphone"]').val(res.data.noHandphone);
                 if (res.data.intmonitoring) {
                     $('input#Monitoring').prop('checked', true);
@@ -305,10 +312,19 @@
                 header: "Pilih Bank",
                 title: "Pilih Bank",
             });
+            $('#ModePembayaran').selectpicker({
+                liveSearch: true,
+                header: "Pilih Mode Pembayaran",
+                title: "Pilih Mode Pembayaran",
+            });
+            $('.tanggal').datepicker({
+                format: 'yyyy-mm-dd',
+                autoclose: true,
+                todayHighlight: true
+            });
             $('#basicModal').on('hide.bs.modal', function(){
                 $('.modal-body form')[0].reset();
-                $('#IdDept').selectpicker('val', '');
-                $('#IdSubdept').selectpicker('val', '');
+                $('#IdDept', '#IdSubdept', '#Bank', '#ModePembayaran', '#DoorlockPriv').selectpicker('val', '');
                 $('#preview').attr('src', "{{ asset('dist/profiles/default.jpg') }}");
                 $('input[name="_method"]').remove();
             })
@@ -322,7 +338,7 @@
                     reader.readAsDataURL(file);
                 }
             });
-            $('.modal-body form').on('submit', function(e){
+            $('#FormEmployee').on('submit', function(e){
                 e.preventDefault();
                 let formData = new FormData($(this)[0]);
                 formData.append('payment_mode', 'weekly');
@@ -377,6 +393,7 @@
                             <div class="card">
                                 <div class="card-body">
                                     <h5 class="card-title">Pegawai Table</h5>
+                                    <button class="btn btn-success text-white float-left" onclick="exportExcel()"><i class="fa-solid fa-file-excel mr-1"></i> Absensi</button>
                                     <button class="btn btn-primary float-right" onclick="create()"><i class="icon-plus mr-1"></i> Pegawai</button>
                                     <div class="table-responsive">
                                         <table class="table table-striped table-bordered" id="daTable">
@@ -423,7 +440,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form action="" method="post" enctype="multipart/form-data">
+                    <form action="" method="post" id="FormEmployee" enctype="multipart/form-data">
                         <div class="row">
                             <div class="col">
                                 <div class="my-3">
@@ -509,6 +526,13 @@
                                     </select>
                                 </div>
                                 <div class="form-group">
+                                    <label for="ModePembayaran">Mode Pembayaran</label>
+                                    <select name="payment_mode" id="ModePembayaran" class="form-control" required>
+                                        <option value="weekly">Weekly</option>
+                                        <option value="monthly">Monthly</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
                                     <label for="DoorlockPriv">Doorlock Privileges</label>
                                     <select name="doorlock_id[]" id="DoorlockPriv" class="form-control" multiple required>
                                         @foreach ($doorlock_devices as $item)
@@ -570,6 +594,35 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary text-white" data-dismiss="modal">Tutup <i class="fa-solid fa-xmark"></i></button>
                     <button type="submit" class="btn btn-success text-white">Simpan <i class="fa-solid fa-floppy-disk"></i></button>
+                </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="exportModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Modal</h5>
+                    <button type="button" class="close" data-dismiss="modal"><span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ route('absensi.karyawan.excel') }}" method="post" id="FormExport" target="_new">
+                        @csrf
+                        <div class="form-group">
+                            <label for="Awal">Tanggal Awal</label>
+                            <input type="text" id="Awal" class="form-control tanggal" name="start" placeholder="Tanggal Awal" autocomplete="off" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="Akhir">Tanggal Akhir</label>
+                            <input type="text" id="Akhir" class="form-control tanggal" name="akhir" placeholder="Tanggal Akhir" autocomplete="off" required>
+                        </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary text-white" data-dismiss="modal">Tutup <i class="fa-solid fa-xmark"></i></button>
+                    <button type="submit" class="btn btn-success text-white">Export <i class="fa-solid fa-file-excel"></i></button>
                 </form>
                 </div>
             </div>

@@ -20,7 +20,6 @@ class AbsenceController extends Controller
             $data = collect::join('memployees', 'memployees.id', '=', 'collect_attendances.user_id')
                 ->orderBy('id', 'DESC')->get(['collect_attendances.*', 'memployees.nama']);
             return DataTables::of($data)
-                ->addIndexColumn()
                 ->editColumn('jam_keluar', function ($row) {
                     return empty($row->jam_Keluar)?'Belum keluar':$row->jam_Keluar;
                 })

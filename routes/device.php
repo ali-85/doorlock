@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::resource('location', DataLocationController::class)->only(['index', 'store', 'edit', 'update', 'destroy']);
 Route::resource('attendance', AttendanceController::class)->only(['index', 'store', 'edit', 'update', 'destroy']);
-Route::resource('doorlock', DoorlockController::class)->only(['index', 'store', 'edit', 'update', 'destroy']);
+Route::name('device.')->group(function(){
+    Route::resource('doorlock', DoorlockController::class)->only(['index', 'store', 'edit', 'update', 'destroy']);
+});
 Route::resource('remark', RemarkController::class)->only(['index', 'store', 'edit', 'update', 'destroy']);
 Route::resource('schedule', ScheduleController::class)->only(['index', 'store', 'edit', 'update', 'destroy']);

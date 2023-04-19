@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\DataTables;
+use Excel;
+use App\Exports\EmployeeAbsenceExport;
 use Illuminate\Support\Facades\DB;
 use App\Models\memployee;
 use App\Models\mdepartement as mdept;
@@ -60,9 +62,9 @@ class EmployeeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function excel(Request $request)
     {
-        //
+        return Excel::download(new EmployeeAbsenceExport($request->start, $request->akhir), 'Absensi_'.$request->start.'.xlsx');
     }
 
     /**
@@ -75,7 +77,7 @@ class EmployeeController extends Controller
     {
         $input = $request->only([
             'nip', 'rfid_number', 'fingerprint',
-            'nama', 'job_title', 'noHandphone', 'email',
+            'nama', 'job_title', 'noHandphone', 'email', 'payment_mode',
             'attendances_type', 'departement_id', 'subdepartement_id',
             'golongan_id', 'shiftcode_id', 'alamat', 'basic_salary',
             'transfer_type', 'bank_name', 'bank_account', 'credited_accont',
@@ -176,7 +178,7 @@ class EmployeeController extends Controller
     {
         $input = $request->only([
             'nip', 'rfid_number', 'fingerprint',
-            'nama', 'job_title', 'noHandphone', 'email',
+            'nama', 'job_title', 'noHandphone', 'email', 'payment_mode',
             'attendances_type', 'departement_id', 'subdepartement_id',
             'golongan_id', 'shiftcode_id', 'alamat', 'basic_salary',
             'transfer_type', 'bank_name', 'bank_account', 'credited_accont',

@@ -2,7 +2,8 @@
 @section('title', 'Report Absence')
 @push('css')
     <link href="{{ asset('assets/plugins/datatables.net-bs5/css/dataTables.bootstrap5.min.css') }}" rel="stylesheet" />
-    <link href="{{ asset('assets/plugins/datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css') }}" rel="stylesheet" />
+    <link href="{{ asset('assets/plugins/datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css') }}"
+        rel="stylesheet" />
     <link href="{{ asset('assets/plugins/datatables.net-buttons-bs5/css/buttons.bootstrap5.min.css') }}" rel="stylesheet" />
     <link rel="stylesheet" href="{{ asset('assets/plugins/toastr/css/toastr.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/plugins/sweetalert2/dist/sweetalert2.min.css') }}">
@@ -32,6 +33,7 @@
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
         });
+
         function getUrl() {
             return url;
         }
@@ -47,7 +49,7 @@
             responsive: true,
             dom: '<"row"<"col-sm-4"l><"col-sm-5"B><"col-sm-3"fr>>t<"row"<"col-sm-5"i><"col-sm-7"p>>',
             columns: [{
-                    data: 'DT_RowIndex'
+                    data: 'id'
                 },
                 {
                     data: 'nama'
@@ -75,8 +77,7 @@
                 "targets": [5],
                 "visible": false
             }],
-            buttons: [
-                {
+            buttons: [{
                     extend: 'copy',
                     className: 'btn-sm btn-success text-white',
                     text: '<i class="fas fa-copy"></i> Copy',
@@ -114,14 +115,15 @@
             let editUrl = "{{ route('absence.show', ':id') }}";
             editUrl = editUrl.replace(':id', id);
             $('.modal-body form').find('.form-group').remove();
-            $.get(editUrl, function(res){
+            $.get(editUrl, function(res) {
                 let datas = res.data;
                 let input = '';
                 $('.modal-header h5').html("Lihat Report Absence");
-                $.each(datas, function(key, val){
-                    input += '<div class="form-group">'+
-                            '<label for="'+key+'">'+key+'</label>'+
-                            '<input type="text" id="'+key+'" class="form-control" value="'+val+'" readonly>'+
+                $.each(datas, function(key, val) {
+                    input += '<div class="form-group">' +
+                        '<label for="' + key + '">' + key + '</label>' +
+                        '<input type="text" id="' + key + '" class="form-control" value="' + val +
+                        '" readonly>' +
                         '</div>';
                 })
                 $('.modal-body form').append(input);
@@ -133,25 +135,25 @@
             let deleteUrl = "{{ route('leave-absence.destroy', ':id') }}";
             deleteUrl = deleteUrl.replace(':id', id);
             swal({
-                    title: 'Hapus data ini?',
-                    text: "Data ini tidak akan bisa dikembalikan!",
-                    type: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: 'Hapus!',
-                    cancelButtonText: 'Batal',
-                    confirmButtonColor: '#F44336',
-                    reverseButtons: true
-                }).then((isConfirm) => {
+                title: 'Hapus data ini?',
+                text: "Data ini tidak akan bisa dikembalikan!",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Hapus!',
+                cancelButtonText: 'Batal',
+                confirmButtonColor: '#F44336',
+                reverseButtons: true
+            }).then((isConfirm) => {
                 if (isConfirm.value) {
                     $.ajax({
                         url: deleteUrl,
                         type: "DELETE",
                         dataType: "JSON",
-                        success: function(response){
+                        success: function(response) {
                             notification(response.status, response.message);
                             Table.ajax.reload(null, false);
                         },
-                        error: function(res){
+                        error: function(res) {
                             notification(res.responseJSON.status, res.responseJSON.message);
                         }
                     })
@@ -185,11 +187,11 @@
             }
         }
         $(document).ready(function() {
-            $('#basicModal').on('hide.bs.modal', function(){
+            $('#basicModal').on('hide.bs.modal', function() {
                 $('.modal-body form')[0].reset();
                 $('input[name="_method"]').remove();
             })
-            $('.modal-body form').on('submit', function(e){
+            $('.modal-body form').on('submit', function(e) {
                 e.preventDefault();
                 let formData = new FormData($(this)[0]);
                 formData.append('createdBy', "{{ Auth::user()->name }}");
@@ -201,12 +203,12 @@
                     contentType: false,
                     processData: false,
                     dataType: "JSON",
-                    success: function(response){
+                    success: function(response) {
                         $('#basicModal').modal('hide');
                         notification(response.status, response.message);
                         Table.ajax.reload(null, false);
                     },
-                    error: function(res){
+                    error: function(res) {
                         notification(res.responseJSON.status, res.responseJSON.message);
                     }
                 })
@@ -216,8 +218,8 @@
 @endpush
 @section('content')
     <!--**********************************
-                                Content body start
-                            ***********************************-->
+                                    Content body start
+                                ***********************************-->
     <div class="content-body">
 
         <div class="row page-titles mx-0">
@@ -266,8 +268,8 @@
         <!-- #/ container -->
     </div>
     <!--**********************************
-        Content body end
-    ***********************************-->
+            Content body end
+        ***********************************-->
     <!-- Modal -->
     <div class="modal fade" id="basicModal">
         <div class="modal-dialog" role="document">
@@ -281,8 +283,9 @@
                     <form action="" method="post">
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary text-white" data-dismiss="modal">Tutup <i class="fa-solid fa-xmark"></i></button>
-                </form>
+                    <button type="button" class="btn btn-secondary text-white" data-dismiss="modal">Tutup <i
+                            class="fa-solid fa-xmark"></i></button>
+                    </form>
                 </div>
             </div>
         </div>

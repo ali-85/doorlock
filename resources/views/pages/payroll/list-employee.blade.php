@@ -201,8 +201,8 @@
                             <div class="card">
                                 <div class="card-body">
                                     <h5 class="card-title">List Employee Table</h5>
-                                    <button class="btn btn-sm btn-success text-white ml-1 float-right"><i class="fa-solid fa-file-excel"></i> Export Excel</button>
-                                    <button onclick="pdfModal()" class="btn btn-sm btn-danger float-right"><i class="fa-solid fa-file-pdf"></i> Export PDF</button>
+                                    {{-- <button class="btn btn-sm btn-success text-white ml-1 float-right"><i class="fa-solid fa-file-excel"></i> Export Excel</button>
+                                    <button onclick="pdfModal()" class="btn btn-sm btn-danger float-right"><i class="fa-solid fa-file-pdf"></i> Export PDF</button> --}}
                                     <div class="table-responsive">
                                         <table class="table table-striped table-bordered" id="daTable">
                                             <thead>

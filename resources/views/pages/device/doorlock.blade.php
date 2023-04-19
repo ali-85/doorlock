@@ -42,7 +42,7 @@
             return method;
         }
         var Table = $('#daTable').DataTable({
-            ajax: "{{ route('doorlock.index') }}",
+            ajax: "{{ route('device.doorlock.index') }}",
             processing: true,
             serverSide: true,
             responsive: true,
@@ -108,16 +108,16 @@
         });
 
         function create() {
-            url = "{{ route('doorlock.store') }}";
+            url = "{{ route('device.doorlock.store') }}";
             method = 'POST';
             $('.modal-header h5').html("Tambah Data Lokasi");
             $('#basicModal').modal('show');
         }
 
         function edit(id) {
-            let editUrl = "{{ route('doorlock.edit', ':id') }}";
+            let editUrl = "{{ route('device.doorlock.edit', ':id') }}";
             editUrl = editUrl.replace(':id', id);
-            url = "{{ route('doorlock.update', ':id') }}";
+            url = "{{ route('device.doorlock.update', ':id') }}";
             url = url.replace(':id', id);
             method = "POST";
             $('.modal-body form').append('<input type="hidden" name="_method" value="PUT" />');
@@ -143,7 +143,7 @@
         }
 
         function destroy(id) {
-            let deleteUrl = "{{ route('doorlock.destroy', ':id') }}";
+            let deleteUrl = "{{ route('device.doorlock.destroy', ':id') }}";
             deleteUrl = deleteUrl.replace(':id', id);
             swal({
                     title: 'Hapus data ini?',

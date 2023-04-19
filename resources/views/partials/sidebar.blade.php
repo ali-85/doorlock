@@ -9,7 +9,7 @@
                     <i class="icon-home menu-icon"></i><span class="nav-text">Dashboard</span>
                 </a>
             </li>
-            @if (in_array(Auth::user()->role_id, [1, 3]))            
+            @if (in_array(Auth::user()->role_id, [1, 3]))
             <li>
                 <a class="has-arrow" href="javascript:void()" aria-expanded="false">
                     <i class="fa fa-database"></i> <span class="nav-text">Master Data</span>
@@ -24,7 +24,7 @@
                 </ul>
             </li>
             @endif
-            @if (in_array(Auth::user()->role_id, [1, 2]))            
+            @if (in_array(Auth::user()->role_id, [1, 2]))
             <li>
                 <a class="has-arrow" href="javascript:void()" aria-expanded="false">
                     <i class="fa fa-microchip"></i> <span class="nav-text">Master Devices</span>
@@ -32,7 +32,7 @@
                 <ul aria-expanded="false">
                     <li><a href="{{ route('location.index') }}"><i class="icon-location-pin"></i> Data Location</a></li>
                     <li><a href="{{ route('attendance.index') }}"><i class="icon-screen-smartphone"></i> Attendance Device</a></li>
-                    <li><a href="{{ route('doorlock.index') }}"><i class="icon-screen-desktop"></i> Doorlock Device</a></li>
+                    <li><a href="{{ route('device.doorlock.index') }}"><i class="icon-screen-desktop"></i> Doorlock Device</a></li>
                     <li><a href="{{ route('remark.index') }}"><i class="icon-notebook"></i> Remarks</a></li>
                     <li><a href="{{ route('schedule.index') }}"><i class="icon-notebook"></i> Schedule Management</a></li>
                 </ul>
@@ -47,16 +47,23 @@
                     <li><a href="{{ route('leave-absence.index') }}"><i class="icon-graph"></i> Leave and Absence</a></li>
                 </ul>
             </li>
+            @endif
+            @if (in_array(Auth::user()->role_id, [1, 3, 4]))
             <li>
                 <a class="has-arrow" href="javascript:void()" aria-expanded="false">
                     <i class="icon-credit-card"></i> <span class="nav-text">Payroll System</span>
                 </a>
                 <ul aria-expanded="false">
-                    <li><a href="{{ route('payroll.employee.list') }}"><i class="icon-note"></i> Payroll</a></li>
+                    @if (in_array(Auth::user()->role_id, [1, 4]))
+                    <li><a href="{{ route('payroll.employee.list') }}"><i class="icon-note"></i> Manual Absence</a></li>
+                    <li><a href="{{ route('request-payment.index') }}"><i class="fas fa-file-invoice-dollar mr-2"></i> Request payment</a></li>
+                    @elseif (in_array(Auth::user()->role_id, [1, 3]))
+                    <li><a href="{{ route('approve.payment.index') }}"><i class="fas fa-file-invoice-dollar mr-2"></i> Approve Request</a></li>
+                    @endif
                 </ul>
-            </li>                
+            </li>
             @endif
-            @if (in_array(Auth::user()->role_id, [1, 2]))            
+            @if (in_array(Auth::user()->role_id, [1, 2]))
             <li>
                 <a class="has-arrow" href="javascript:void()" aria-expanded="false">
                     <i class="icon-printer"></i> <span class="nav-text">Reports</span>

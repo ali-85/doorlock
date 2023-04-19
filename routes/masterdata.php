@@ -15,3 +15,4 @@ Route::resource('subdepartment', SubdepartementController::class)->only(['index'
 Route::resource('employee', EmployeeController::class)->only(['index', 'store', 'edit', 'update', 'destroy']);
 Route::get('employe/subdepartement/{id}', [EmployeeController::class, 'getSubdepartement'])->name('employee.subdepartement.option');
 Route::resource('holiday', HolidayController::class)->only(['index', 'store', 'edit', 'update', 'destroy']);
+Route::post('employee/excel', [EmployeeController::class, 'excel'])->name('absensi.karyawan.excel');

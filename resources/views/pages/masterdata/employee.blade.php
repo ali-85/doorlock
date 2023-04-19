@@ -2,7 +2,8 @@
 @section('title', 'Employees')
 @push('css')
     <link href="{{ asset('assets/plugins/datatables.net-bs5/css/dataTables.bootstrap5.min.css') }}" rel="stylesheet" />
-    <link href="{{ asset('assets/plugins/datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css') }}" rel="stylesheet" />
+    <link href="{{ asset('assets/plugins/datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css') }}"
+        rel="stylesheet" />
     <link href="{{ asset('assets/plugins/datatables.net-buttons-bs5/css/buttons.bootstrap5.min.css') }}" rel="stylesheet" />
     <link rel="stylesheet" href="{{ asset('assets/plugins/toastr/css/toastr.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/plugins/sweetalert2/dist/sweetalert2.min.css') }}">
@@ -40,6 +41,7 @@
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
         });
+
         function getUrl() {
             return url;
         }
@@ -91,15 +93,15 @@
                 }
             ],
             columnDefs: [{
-                "targets": [0, 11],
-                "orderable": false
-            },
-            {
-                "targets": [7, 8, 9, 10],
-                "visible": false
-            }],
-            buttons: [
+                    "targets": [0, 11],
+                    "orderable": false
+                },
                 {
+                    "targets": [7, 8, 9, 10],
+                    "visible": false
+                }
+            ],
+            buttons: [{
                     extend: 'copy',
                     className: 'btn-sm btn-success text-white',
                     text: '<i class="fas fa-copy"></i> Copy',
@@ -132,7 +134,8 @@
             $('.modal-header h5').html("Tambah Pegawai");
             $('#basicModal').modal('show');
         }
-        function exportExcel(){
+
+        function exportExcel() {
             $('.modal-header h5').html("Export Absensi Pegawai");
             $('#exportModal').modal('show');
         }
@@ -147,17 +150,17 @@
             method = "POST";
             $('.modal-body form').append('<input type="hidden" name="_method" value="PUT" />');
             $('#qrcodeCanvas').empty();
-            $.get(editUrl, function(res){
+            $.get(editUrl, function(res) {
                 $('.modal-header h5').html("Edit Pegawai");
                 let doorlock_priv = res.data.doorlock;
                 // let image = "{{ asset('dist/profiles/:profiles') }}";
                 // image = image.replace(':profiles', res.data.profile_photo);
                 nama_karyawan = res.data.nama;
                 jQuery('#qrcodeCanvas').qrcode({
-                    text	: res.data.nip,
+                    text: res.data.nip,
                     render: 'div'
                 });
-                $.each(doorlock_priv, function(i, val){
+                $.each(doorlock_priv, function(i, val) {
                     privileges.push(val.id);
                 })
                 $('#DoorlockPriv').selectpicker('val', privileges)
@@ -190,10 +193,10 @@
                 wrapper.find('option').remove();
                 let optionUrl = "{{ route('employee.subdepartement.option', ':id') }}";
                 optionUrl = optionUrl.replace(':id', $('#IdDept').val());
-                $.get(optionUrl, function(response){
+                $.get(optionUrl, function(response) {
                     let data = response.data;
-                    $.each(data, function(idx, value){
-                        option += '<option value="'+value.id+'">'+value.nama+'</option>';
+                    $.each(data, function(idx, value) {
+                        option += '<option value="' + value.id + '">' + value.nama + '</option>';
                     })
                     wrapper.append(option).selectpicker('refresh');
                     wrapper.selectpicker('val', subdept);
@@ -205,25 +208,25 @@
             let deleteUrl = "{{ route('employee.destroy', ':id') }}";
             deleteUrl = deleteUrl.replace(':id', id);
             swal({
-                    title: 'Hapus data ini?',
-                    text: "Data ini tidak akan bisa dikembalikan!",
-                    type: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: 'Hapus!',
-                    cancelButtonText: 'Batal',
-                    confirmButtonColor: '#F44336',
-                    reverseButtons: true
-                }).then((isConfirm) => {
+                title: 'Hapus data ini?',
+                text: "Data ini tidak akan bisa dikembalikan!",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Hapus!',
+                cancelButtonText: 'Batal',
+                confirmButtonColor: '#F44336',
+                reverseButtons: true
+            }).then((isConfirm) => {
                 if (isConfirm.value) {
                     $.ajax({
                         url: deleteUrl,
                         type: "DELETE",
                         dataType: "JSON",
-                        success: function(response){
+                        success: function(response) {
                             notification(response.status, response.message);
                             Table.ajax.reload(null, false);
                         },
-                        error: function(res){
+                        error: function(res) {
                             notification(res.responseJSON.status, res.responseJSON.message);
                         }
                     })
@@ -256,35 +259,37 @@
                 });
             }
         }
-        function downloadQr(that){
-            html2canvas(document.getElementById("qrcodewrapper"),
-			{
-				allowTaint: true,
-				useCORS: true
-			}).then(function (canvas) {
-				var anchorTag = document.createElement("a");
-				document.body.appendChild(anchorTag);
-				anchorTag.download = nama_karyawan+"_Qr_Code.jpg";
-				anchorTag.href = canvas.toDataURL();
-				anchorTag.target = '_blank';
-				anchorTag.click();
-			});
+
+        function downloadQr(that) {
+            html2canvas(document.getElementById("qrcodewrapper"), {
+                allowTaint: true,
+                useCORS: true
+            }).then(function(canvas) {
+                var anchorTag = document.createElement("a");
+                document.body.appendChild(anchorTag);
+                anchorTag.download = nama_karyawan + "_Qr_Code.jpg";
+                anchorTag.href = canvas.toDataURL();
+                anchorTag.target = '_blank';
+                anchorTag.click();
+            });
         }
-        function listSubdepartement(that){
+
+        function listSubdepartement(that) {
             let wrapper = $('#IdSubdept');
             let option = '';
             wrapper.find('option').remove();
             let optionUrl = "{{ route('employee.subdepartement.option', ':id') }}";
             optionUrl = optionUrl.replace(':id', $(that).val());
-            $.get(optionUrl, function(response){
+            $.get(optionUrl, function(response) {
                 let data = response.data;
-                $.each(data, function(idx, value){
-                    option += '<option value="'+value.id+'">'+value.nama+'</option>';
+                $.each(data, function(idx, value) {
+                    option += '<option value="' + value.id + '">' + value.nama + '</option>';
                 })
                 wrapper.append(option).selectpicker('refresh');
             })
         }
-        function showHideBank(){
+
+        function showHideBank() {
             if ($('select#Pembayaran').val() == '1') {
                 $('.norek, .bank, .bank-name').css('display', 'block');
             } else {
@@ -322,23 +327,24 @@
                 autoclose: true,
                 todayHighlight: true
             });
-            $('#basicModal').on('hide.bs.modal', function(){
+            $('#basicModal').on('hide.bs.modal', function() {
                 $('.modal-body form')[0].reset();
-                $('#IdDept', '#IdSubdept', '#Bank', '#ModePembayaran', '#DoorlockPriv').selectpicker('val', '');
+                $('#IdDept', '#IdSubdept', '#Bank', '#ModePembayaran', '#DoorlockPriv').selectpicker('val',
+                    '');
                 $('#preview').attr('src', "{{ asset('dist/profiles/default.jpg') }}");
                 $('input[name="_method"]').remove();
             })
-            $('#ProfilePhoto').change(function(){
+            $('#ProfilePhoto').change(function() {
                 const file = this.files[0];
-                if (file){
+                if (file) {
                     let reader = new FileReader();
-                    reader.onload = function(event){
+                    reader.onload = function(event) {
                         $('#preview').attr('src', event.target.result);
                     }
                     reader.readAsDataURL(file);
                 }
             });
-            $('#FormEmployee').on('submit', function(e){
+            $('#FormEmployee').on('submit', function(e) {
                 e.preventDefault();
                 let formData = new FormData($(this)[0]);
                 formData.append('payment_mode', 'weekly');
@@ -351,16 +357,17 @@
                     contentType: false,
                     processData: false,
                     dataType: "JSON",
-                    success: function(response){
+                    success: function(response) {
                         $('#basicModal').modal('hide');
                         notification(response.status, response.message);
                         Table.ajax.reload(null, false);
                     },
-                    error: function(res){
+                    error: function(res) {
                         let fields = res.responseJSON.fields;
-                        $.each(fields, function(i, val){
-                            $.each(val, function(idx, value){
-                                notification(response.responseJSON.status, value);
+                        $.each(fields, function(i, val) {
+                            $.each(val, function(idx, value) {
+                                notification(response.responseJSON.status,
+                                    value);
                             })
                         })
                     }
@@ -371,8 +378,8 @@
 @endpush
 @section('content')
     <!--**********************************
-                                Content body start
-                            ***********************************-->
+                                    Content body start
+                                ***********************************-->
     <div class="content-body">
 
         <div class="row page-titles mx-0">
@@ -393,8 +400,10 @@
                             <div class="card">
                                 <div class="card-body">
                                     <h5 class="card-title">Pegawai Table</h5>
-                                    <button class="btn btn-success text-white float-left" onclick="exportExcel()"><i class="fa-solid fa-file-excel mr-1"></i> Absensi</button>
-                                    <button class="btn btn-primary float-right" onclick="create()"><i class="icon-plus mr-1"></i> Pegawai</button>
+                                    <button class="btn btn-success text-white float-left" onclick="exportExcel()"><i
+                                            class="fa-solid fa-file-excel mr-1"></i> Absensi</button>
+                                    <button class="btn btn-primary float-right" onclick="create()"><i
+                                            class="icon-plus mr-1"></i> Pegawai</button>
                                     <div class="table-responsive">
                                         <table class="table table-striped table-bordered" id="daTable">
                                             <thead>
@@ -428,8 +437,8 @@
         <!-- #/ container -->
     </div>
     <!--**********************************
-        Content body end
-    ***********************************-->
+            Content body end
+        ***********************************-->
     <!-- Modal -->
     <div class="modal fade" id="basicModal">
         <div class="modal-dialog modal-lg" role="document">
@@ -445,14 +454,16 @@
                             <div class="col">
                                 <div class="my-3">
                                     <div class="d-flex justify-content-center">
-                                        <img id="preview" src="{{ asset('dist/profiles/default.jpg') }}" alt="Photo Profile" class="w-50 img-thumbnail">
+                                        <img id="preview" src="{{ asset('dist/profiles/default.jpg') }}"
+                                            alt="Photo Profile" class="w-50 img-thumbnail">
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <label for="ProfilePhoto">Photo Profile</label>
                                     <div class="input-group">
                                         <div class="custom-file">
-                                            <input type="file" class="custom-file-input" name="profile_photo_path" id="ProfilePhoto">
+                                            <input type="file" class="custom-file-input" name="profile_photo_path"
+                                                id="ProfilePhoto">
                                             <label class="custom-file-label">Upload Foto</label>
                                         </div>
                                     </div>
@@ -462,38 +473,46 @@
                                         <div id="qrcodeCanvas"></div>
                                     </div>
                                     <div class="d-flex justify-content-center">
-                                        <button type="button" onclick="downloadQr(this)" class="btn btn-primary btn-sm"><i class="fa-solid fa-download"></i> Download</button>
+                                        <button type="button" onclick="downloadQr(this)" class="btn btn-primary btn-sm"><i
+                                                class="fa-solid fa-download"></i> Download</button>
                                     </div>
                                 </div>
                             </div>
                             <div class="col">
                                 <div class="form-group">
                                     <label for="Nip">Nomor Induk Pegawai</label>
-                                    <input type="text" id="Nip" class="form-control" name="nip" placeholder="NIP" required>
+                                    <input type="text" id="Nip" class="form-control" name="nip"
+                                        placeholder="NIP" required>
                                 </div>
                                 <div class="form-group">
                                     <label for="Rfid">RFID Number</label>
-                                    <input type="text" id="Rfid" class="form-control" name="rfid_number" placeholder="RFID" required>
+                                    <input type="text" id="Rfid" class="form-control" name="rfid_number"
+                                        placeholder="RFID" required>
                                 </div>
                                 <div class="form-group">
                                     <label for="Fingerprint">Fingerprint</label>
-                                    <input type="text" id="Fingerprint" class="form-control" name="fingerprint" placeholder="Fingerprint">
+                                    <input type="text" id="Fingerprint" class="form-control" name="fingerprint"
+                                        placeholder="Fingerprint">
                                 </div>
                                 <div class="form-group">
                                     <label for="Name">Nama</label>
-                                    <input type="text" id="Name" class="form-control" name="nama" placeholder="Nama" required>
+                                    <input type="text" id="Name" class="form-control" name="nama"
+                                        placeholder="Nama" required>
                                 </div>
                                 <div class="form-group">
                                     <label for="Job">Job Title</label>
-                                    <input type="text" id="Job" class="form-control" name="job_title" placeholder="Job Title" required>
+                                    <input type="text" id="Job" class="form-control" name="job_title"
+                                        placeholder="Job Title" required>
                                 </div>
                                 <div class="form-group">
                                     <label for="NoHp">No Handphone</label>
-                                    <input type="text" id="NoHp" class="form-control" name="noHandphone" placeholder="No Handphone">
+                                    <input type="text" id="NoHp" class="form-control" name="noHandphone"
+                                        placeholder="No Handphone">
                                 </div>
                                 <div class="form-group">
                                     <label for="Email">Email</label>
-                                    <input type="email" id="Email" class="form-control" name="email" placeholder="pegawai@csp.com">
+                                    <input type="email" id="Email" class="form-control" name="email"
+                                        placeholder="pegawai@csp.com">
                                 </div>
                                 <div class="form-group">
                                     <label for="Kehadiran">Kehadiran</label>
@@ -505,7 +524,8 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="IdDept">Departement</label>
-                                    <select name="departement_id" id="IdDept" class="form-control" onchange="listSubdepartement(this)" required>
+                                    <select name="departement_id" id="IdDept" class="form-control"
+                                        onchange="listSubdepartement(this)" required>
                                         @foreach ($depts as $item)
                                             <option value="{{ $item->id }}">{{ $item->nama }}</option>
                                         @endforeach
@@ -534,7 +554,8 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="DoorlockPriv">Doorlock Privileges</label>
-                                    <select name="doorlock_id[]" id="DoorlockPriv" class="form-control" multiple required>
+                                    <select name="doorlock_id[]" id="DoorlockPriv" class="form-control" multiple
+                                        required>
                                         @foreach ($doorlock_devices as $item)
                                             <option value="{{ $item->id }}">{{ $item->name }}</option>
                                         @endforeach
@@ -555,14 +576,16 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="Salary">Basic Salary</label>
-                                    <input type="number" name="basic_salary" id="Salary" class="form-control" value="0">
+                                    <input type="number" name="basic_salary" id="Salary" class="form-control"
+                                        value="0">
                                 </div>
                                 <div class="form-group">
                                     <label for="Pembayaran">Pembayaran</label>
-                                    <select name="transfer_type" id="Pembayaran" class="form-control" onchange="showHideBank()" required>
+                                    <select name="transfer_type" id="Pembayaran" class="form-control"
+                                        onchange="showHideBank()" required>
                                         <option selected disabled>Pilih Tipe Pembayaran</option>
-                                        <option value="1">Bank</option>
-                                        <option value="2">Cash</option>
+                                        <option value="1">Cash</option>
+                                        <option value="2">Bank</option>
                                     </select>
                                 </div>
                                 <div class="form-group bank-name" style="display: none;">
@@ -574,7 +597,8 @@
                                     <label for="Bank">Pembayaran</label>
                                     <select name="bank_account" id="Bank" class="form-control">
                                         @foreach ($banks as $item)
-                                            <option value="{{ $item->id }}">{{ $item->nama_bank.' | '.$item->kode_bank }}</option>
+                                            <option value="{{ $item->id }}">
+                                                {{ $item->nama_bank . ' | ' . $item->kode_bank }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -583,18 +607,21 @@
                                     <input type="number" name="credited_accont" id="Norek" class="form-control">
                                 </div>
                                 <div class="form-group">
-                                    <div class="form-check form-check-inline">
-                                        <label class="form-check-label">
-                                        <input type="checkbox" id="Monitoring" name="intmonitoring" class="form-check-input" value="1">Aktif Monitoring?</label>
+                                    <div class="form-check">
+                                        <input type="checkbox" id="Monitoring" name="intmonitoring"
+                                            class="form-check-input" value="1" />
+                                        <label class="form-check-label">Aktif Monitoring?</label>
                                     </div>
                                 </div>
                             </div>
                         </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary text-white" data-dismiss="modal">Tutup <i class="fa-solid fa-xmark"></i></button>
-                    <button type="submit" class="btn btn-success text-white">Simpan <i class="fa-solid fa-floppy-disk"></i></button>
-                </form>
+                    <button type="button" class="btn btn-secondary text-white" data-dismiss="modal">Tutup <i
+                            class="fa-solid fa-xmark"></i></button>
+                    <button type="submit" class="btn btn-success text-white">Simpan <i
+                            class="fa-solid fa-floppy-disk"></i></button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -613,17 +640,21 @@
                         @csrf
                         <div class="form-group">
                             <label for="Awal">Tanggal Awal</label>
-                            <input type="text" id="Awal" class="form-control tanggal" name="start" placeholder="Tanggal Awal" autocomplete="off" required>
+                            <input type="text" id="Awal" class="form-control tanggal" name="start"
+                                placeholder="Tanggal Awal" autocomplete="off" required>
                         </div>
                         <div class="form-group">
                             <label for="Akhir">Tanggal Akhir</label>
-                            <input type="text" id="Akhir" class="form-control tanggal" name="akhir" placeholder="Tanggal Akhir" autocomplete="off" required>
+                            <input type="text" id="Akhir" class="form-control tanggal" name="akhir"
+                                placeholder="Tanggal Akhir" autocomplete="off" required>
                         </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary text-white" data-dismiss="modal">Tutup <i class="fa-solid fa-xmark"></i></button>
-                    <button type="submit" class="btn btn-success text-white">Export <i class="fa-solid fa-file-excel"></i></button>
-                </form>
+                    <button type="button" class="btn btn-secondary text-white" data-dismiss="modal">Tutup <i
+                            class="fa-solid fa-xmark"></i></button>
+                    <button type="submit" class="btn btn-success text-white">Export <i
+                            class="fa-solid fa-file-excel"></i></button>
+                    </form>
                 </div>
             </div>
         </div>

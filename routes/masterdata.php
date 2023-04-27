@@ -9,6 +9,7 @@ use App\Http\Controllers\MasterData\SubdepartementController;
 use Illuminate\Support\Facades\Route;
 
 Route::resource('account', AccountController::class)->only(['index', 'store', 'edit', 'update', 'destroy']);
+Route::put('account/reset/{id}', [AccountController::class, 'reset'])->name('account.reset.password');
 Route::resource('role', RoleController::class)->only(['index', 'store', 'edit', 'update', 'destroy']);
 Route::resource('department', DepartementController::class)->only(['index', 'store', 'edit', 'update', 'destroy']);
 Route::resource('subdepartment', SubdepartementController::class)->only(['index', 'store', 'edit', 'update', 'destroy']);

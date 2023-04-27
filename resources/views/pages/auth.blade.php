@@ -392,11 +392,9 @@
                             <input type="password" class="form-control" name="password" placeholder="Password" required>
                         </div>
                         <div class="form-group">
-                            <div class="col-sm">
-                                <div class="form-check">
-                                    <input class="form-check-input" name="remember" type="checkbox" value="1">
-                                    <label class="form-check-label">Remember Me?</label>
-                                </div>
+                            <div class="form-check">
+                                <input name="remember" type="checkbox" value="1"></input>
+                                <label class="form-check-label">Remember Me?</label>
                             </div>
                         </div>
                 </div>

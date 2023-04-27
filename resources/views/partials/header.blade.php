@@ -7,7 +7,7 @@
         ***********************************-->
     <div class="nav-header" style="background-color: #3F51B5">
         <div class="brand-logo">
-            <a href="index.html">
+            <a href="{{ route('dashboard') }}">
                 <b class="logo-abbr">
                     <h6 class="text-white"><Strong>PT Cahaya Sukses Plastindo</Strong></h6>
                 </b>

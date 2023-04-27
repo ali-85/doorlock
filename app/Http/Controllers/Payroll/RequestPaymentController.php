@@ -122,8 +122,9 @@ class RequestPaymentController extends Controller
         $payment = RequestPayment::find($id);
         $data = DB::table('v_payroll AS vp')
             ->selectRaw(
-                "vp.id, vp.nama, vp.basic_salary, SUM(vp.salary) AS salary, vp.pembayaran,
-                5000*SUM(vp.lembur) AS lembur, SUM(vp.lembur) AS jumlah_lembur, 20000*SUM(vp.lembur2) AS lembur2,
+                "vp.id, vp.nama, vp.basic_salary, SUM(vp.salary) AS salary, vp.pembayaran, COUNT(vp.jam_masuk) AS hari_kerja,
+                CASE WHEN DAYNAME(vp.jam_masuk) = 'Sunday' THEN 7500*SUM(vp.lembur) ELSE 5000*SUM(vp.lembur) END AS lembur,
+                SUM(vp.lembur2) AS lembur2, SUM(lembur3) AS lembur3, SUM(vp.lembur) AS jumlah_lembur,
                 JSON_ARRAYAGG(JSON_OBJECT('category', laa.category, 'remark', laa.remark, 'value', laa.value_1A)) AS insentif"
             )
             ->leftJoin(

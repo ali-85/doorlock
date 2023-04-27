@@ -59,84 +59,12 @@
                     data: 'value_1A'
                 },
                 {
-                    data: 'value_1B'
-                },
-                {
-                    data: 'value_1C'
-                },
-                {
-                    data: 'value_1D'
-                },
-                {
-                    data: 'value_1E'
-                },
-                {
-                    data: 'value_1F'
-                },
-                {
-                    data: 'value_2A'
-                },
-                {
-                    data: 'value_2B'
-                },
-                {
-                    data: 'value_2C'
-                },
-                {
-                    data: 'value_2D'
-                },
-                {
-                    data: 'value_2E'
-                },
-                {
-                    data: 'value_2F'
-                },
-                {
-                    data: 'value_3A'
-                },
-                {
-                    data: 'value_3B'
-                },
-                {
-                    data: 'value_3C'
-                },
-                {
-                    data: 'value_3D'
-                },
-                {
-                    data: 'value_3E'
-                },
-                {
-                    data: 'value_3F'
-                },
-                {
-                    data: 'value_4A'
-                },
-                {
-                    data: 'value_4B'
-                },
-                {
-                    data: 'value_4C'
-                },
-                {
-                    data: 'value_4D'
-                },
-                {
-                    data: 'value_4E'
-                },
-                {
-                    data: 'value_4F'
-                },
-                {
                     data: 'action'
                 }
             ],
             columnDefs: [{
-                "targets": [0, 27],
+                "targets": [0, 4],
                 "orderable": false
-            },{
-                "targets": [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26],
-                "visible": false
             }],
             buttons: [
                 {
@@ -184,30 +112,7 @@
                 $('.modal-header h5').html("Edit Leave and Absence");
                 $('input[name="remark"]').val(res.data.remark);
                 $('select[name="category"]').val(res.data.category);
-                $('#1A').val(res.data.value_1A);
-                $('#1B').val(res.data.value_1B);
-                $('#1C').val(res.data.value_1C);
-                $('#1D').val(res.data.value_1D);
-                $('#1E').val(res.data.value_1E);
-                $('#1F').val(res.data.value_1F);
-                $('#2A').val(res.data.value_2A);
-                $('#2B').val(res.data.value_2B);
-                $('#2C').val(res.data.value_2C);
-                $('#2D').val(res.data.value_2D);
-                $('#2E').val(res.data.value_2E);
-                $('#2F').val(res.data.value_2F);
-                $('#3A').val(res.data.value_3A);
-                $('#3B').val(res.data.value_3B);
-                $('#3C').val(res.data.value_3C);
-                $('#3D').val(res.data.value_3D);
-                $('#3E').val(res.data.value_3E);
-                $('#3F').val(res.data.value_3F);
-                $('#4A').val(res.data.value_4A);
-                $('#4B').val(res.data.value_4B);
-                $('#4C').val(res.data.value_4C);
-                $('#4D').val(res.data.value_4D);
-                $('#4E').val(res.data.value_4E);
-                $('#4F').val(res.data.value_4F);
+                $('#Nominal').val(res.data.value_1A);
                 $('#basicModal').modal('show');
             })
         }
@@ -329,11 +234,7 @@
                                                     <th>#</th>
                                                     <th>CATEGORY</th>
                                                     <th>KETERANGAN</th>
-                                                    @for ($i = 1; $i < 5; $i++)
-                                                        @for ($idx = 'A'; $idx < 'G'; $idx++)
-                                                            <th>{{ $i.$idx }}</th>
-                                                        @endfor
-                                                    @endfor
+                                                    <th>NOMINAL</th>
                                                     <th>AKSI</th>
                                                 </tr>
                                             </thead>
@@ -377,14 +278,10 @@
                                 <option value="payroll deductions">Pengurangan Gaji</option>
                             </select>
                         </div>
-                        @for ($i = 1; $i < 5; $i++)
-                            @for ($idx = 'A'; $idx < 'G'; $idx++)
-                                <div class="form-group">
-                                    <label for="{{ $i.$idx }}">Golongan {{ $i.$idx }}</label>
-                                    <input type="number" id="{{ $i.$idx }}" class="form-control" name="value_{{ $i.$idx }}" placeholder="Nominal" value="0" required>
-                                </div>
-                            @endfor
-                        @endfor
+                        <div class="form-group">
+                            <label for="Nominal">Nominal</label>
+                            <input type="number" id="Nominal" class="form-control" name="value_1A" placeholder="Nominal" value="0" required>
+                        </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary text-white" data-dismiss="modal">Tutup <i class="fa-solid fa-xmark"></i></button>

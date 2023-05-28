@@ -178,9 +178,11 @@ class AbsenceController extends BaseController
                             $cek_device->uid,
                             true
                         );
-                        return $this->sendErrorAbsence(
-                            'sudah absen*' . $cekRfid->nama
-                        );
+                        return response()->json([
+                            'status' => 'error',
+                            'message' => 'sudah absen',
+                            'nama' => $cekRfid->nama
+                        ], 403);
                     }
                 } else {
                     if (
@@ -310,9 +312,11 @@ class AbsenceController extends BaseController
                                 $cek_device->uid,
                                 true
                             );
-                            return $this->sendErrorAbsence(
-                                'sudah absen*' . $cekRfid->nama
-                            );
+                            return response()->json([
+                                'status' => 'error',
+                                'message' => 'sudah absen',
+                                'nama' => $cekRfid->nama
+                            ], 403);
                         }
                     }
                 }

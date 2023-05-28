@@ -255,9 +255,12 @@ class BaseController extends Controller
     // absence
     public function sendErrorAbsence($errorMessage)
     {
-        $response = 'x*' . $errorMessage . '*x';
+        // $response = 'x*' . $errorMessage . '*x';
 
-        return $response;
+        return response()->json([
+            'status' => 'error',
+            'message' => $errorMessage
+        ], 400);
     }
     public function sendMessageAbsence($response, $nama, $statFoto, $wkt)
     {

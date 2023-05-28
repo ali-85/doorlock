@@ -261,17 +261,14 @@ class BaseController extends Controller
     }
     public function sendMessageAbsence($response, $nama, $statFoto, $wkt)
     {
-        $response =
-            'x*success*' .
-            $response .
-            '*' .
-            $nama .
-            '*' .
-            $wkt .
-            '*' .
-            $statFoto .
-            '*x';
-        return $response;
+        // return $response;
+        return response()->json([
+            'status' => 'success',
+            'keterangan' => $response,
+            'nama' => $nama->nama,
+            'nip' => $nama->nip,
+            'waktu' => $wkt
+        ], 200);
     }
 
     public function sendAttendance(

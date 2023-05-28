@@ -198,7 +198,10 @@ class BaseController extends Controller
                     ];
                     OutMonitoring::create($out);
                 } else {
-                    $monitoringdata = OutMonitoring::where('memploye_id', $user_id)
+                    $monitoringdata = OutMonitoring::where(
+                        'memploye_id',
+                        $user_id
+                    )
                         ->whereNull('tmend')
                         ->orderBy('id', 'desc')
                         ->first();
@@ -257,21 +260,27 @@ class BaseController extends Controller
     {
         // $response = 'x*' . $errorMessage . '*x';
 
-        return response()->json([
-            'status' => 'error',
-            'message' => $errorMessage
-        ], 400);
+        return response()->json(
+            [
+                'status' => 'error',
+                'message' => $errorMessage,
+            ],
+            200
+        );
     }
     public function sendMessageAbsence($response, $nama, $statFoto, $wkt)
     {
         // return $response;
-        return response()->json([
-            'status' => 'success',
-            'keterangan' => $response,
-            'nama' => $nama->nama,
-            'nip' => $nama->nip,
-            'waktu' => $wkt
-        ], 200);
+        return response()->json(
+            [
+                'status' => 'success',
+                'keterangan' => $response,
+                'nama' => $nama->nama,
+                'nip' => $nama->nip,
+                'waktu' => $wkt,
+            ],
+            200
+        );
     }
 
     public function sendAttendance(

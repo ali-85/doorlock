@@ -182,7 +182,7 @@ class AbsenceController extends BaseController
                             'status' => 'error',
                             'message' => 'sudah absen',
                             'nama' => $cekRfid->nama
-                        ], 403);
+                        ], 200);
                     }
                 } else {
                     if (
@@ -316,7 +316,7 @@ class AbsenceController extends BaseController
                                 'status' => 'error',
                                 'message' => 'sudah absen',
                                 'nama' => $cekRfid->nama
-                            ], 403);
+                            ], 200);
                         }
                     }
                 }

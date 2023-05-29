@@ -71,7 +71,7 @@ class AbsenceController extends Controller
     public function show($id)
     {
         $data = collect::select(
-                'memployees.nama', 'collect_attendances.jam_masuk',
+                'memployees.nama', 'collect_attendances.jam_masuk', 'collect_attendances.jam_masuk_photo_path', 'collect_attendances.jam_Keluar_photo_path',
                 'collect_attendances.jam_Keluar', 'collect_attendances.keterangan', 'collect_attendances.keterangan_detail'
                 )
             ->join('memployees', 'memployees.id', '=', 'collect_attendances.user_id')

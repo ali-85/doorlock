@@ -114,19 +114,15 @@
         function show(id) {
             let editUrl = "{{ route('absence.show', ':id') }}";
             editUrl = editUrl.replace(':id', id);
-            $('.modal-body form').find('.form-group').remove();
             $.get(editUrl, function(res) {
-                let datas = res.data;
-                let input = '';
-                $('.modal-header h5').html("Lihat Report Absence");
-                $.each(datas, function(key, val) {
-                    input += '<div class="form-group">' +
-                        '<label for="' + key + '">' + key + '</label>' +
-                        '<input type="text" id="' + key + '" class="form-control" value="' + val +
-                        '" readonly>' +
-                        '</div>';
-                })
-                $('.modal-body form').append(input);
+                let data = res.data;
+                $('input#Nama').val(data.nama);
+                $('input#JamMasuk').val(data.jam_masuk);
+                $('input#JamKeluar').val(data.jam_Keluar != null?data.jam_Keluar:'Belum keluar');
+                $('input#Keterangan').val(data.keterangan);
+                $('input#KeteranganDetail').val(data.keterangan_detail);
+                $('img#absence-photo').attr('src', '{!! asset("'+data.jam_masuk_photo_path+'") !!}');
+                $('img#out-photo').attr('src', '{!! asset("'+data.jam_Keluar_photo_path+'") !!}');
                 $('#basicModal').modal('show');
             })
         }
@@ -281,6 +277,34 @@
                 </div>
                 <div class="modal-body">
                     <form action="" method="post">
+                        <div class="form-group">
+                            <label for="Nama">Nama :</label>
+                            <input type="text" name="txtNama" id="Nama" class="form-control" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="JamMasuk">Jam Masuk :</label>
+                            <input type="text" name="jam_masuk" id="JamMasuk" class="form-control" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="JamKeluar">Jam Keluar :</label>
+                            <input type="text" name="jam_Keluar" id="JamKeluar" class="form-control" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="Keterangan">Keterangan :</label>
+                            <input type="text" name="txtKeterangan" id="Keterangan" class="form-control" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="KeteranganDetail">Keterangan Detail :</label>
+                            <input type="text" name="txtKeteranganDetail" id="KeteranganDetail" class="form-control" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="absence-photo">Foto Masuk :</label>
+                            <img src="" id="absence-photo" class="img-thumbnail">
+                        </div>
+                        <div class="form-group">
+                            <label for="out-photo">Foto Pulang :</label>
+                            <img src="" id="out-photo" class="img-thumbnail">
+                        </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary text-white" data-dismiss="modal">Tutup <i

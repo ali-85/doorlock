@@ -18,7 +18,7 @@ class AbsenceController extends Controller
     {
         if ($request->wantsJson()) {
             $data = collect::join('memployees', 'memployees.id', '=', 'collect_attendances.user_id')
-                ->orderBy('id', 'DESC')->get(['collect_attendances.*', 'memployees.nama']);
+                ->orderBy('id', 'DESC')->limit(1000)->get(['collect_attendances.*', 'memployees.nama']);
             return DataTables::of($data)
                 ->editColumn('jam_keluar', function ($row) {
                     return empty($row->jam_Keluar)?'Belum keluar':$row->jam_Keluar;

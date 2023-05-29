@@ -21,6 +21,9 @@ class LeaveAbsenceController extends Controller
             $data = leaveAbsence::all();
             return DataTables::of($data)
                 ->addIndexColumn()
+                ->editColumn('value_1A', function($row){
+                    return 'Rp '. number_format($row->value_1A,0,',','.');
+                })
                 ->addColumn('action', function ($row) {
                     $btn_edit =
                         '<button class="btn btn-info" onclick="edit(' .

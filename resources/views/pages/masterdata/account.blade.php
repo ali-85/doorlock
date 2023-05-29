@@ -127,6 +127,14 @@
                 $('#basicModal').modal('show');
             })
         }
+        function resetPassword(id){
+            url = "{{ route('account.reset.password', ':id') }}";
+            url = url.replace(':id', id);
+            method = "PUT";
+            $('#FormReset')[0].reset();
+            $('.modal-header h5').html("Reset Password Akun");
+            $('#resetModal').modal('show');
+        }
 
         function destroy(id) {
             let deleteUrl = "{{ route('account.destroy', ':id') }}";
@@ -217,7 +225,7 @@
                     reader.readAsDataURL(file);
                 }
             });
-            $('.modal-body form').on('submit', function(e){
+            $('#FormAccount').on('submit', function(e){
                 e.preventDefault();
                 let formData = new FormData($(this)[0]);
                 $.ajax({
@@ -229,6 +237,28 @@
                     dataType: "JSON",
                     success: function(response){
                         $('#basicModal').modal('hide');
+                        notification(response.status, response.message);
+                        Table.ajax.reload(null, false);
+                    },
+                    error: function(res){
+                        let fields = res.responseJSON.fields;
+                        $.each(fields, function(i, val){
+                            $.each(val, function(idx, value){
+                                notification(response.responseJSON.status, value);
+                            })
+                        })
+                    }
+                })
+            })
+            $('#FormReset').on('submit', function(e){
+                e.preventDefault();
+                $.ajax({
+                    url: getUrl(),
+                    type: getMethod(),
+                    data: $(this).serialize(),
+                    dataType: "JSON",
+                    success: function(response){
+                        $('#resetModal').modal('hide');
                         notification(response.status, response.message);
                         Table.ajax.reload(null, false);
                     },
@@ -309,7 +339,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form action="" method="post" enctype="multipart/form-data">
+                    <form id="FormAccount" action="" method="post" enctype="multipart/form-data">
                         <div class="form-group">
                             <label for="IdRole">Role</label>
                             <select name="role_id" id="IdRole" class="form-control" data-title="Pilih Role" required>
@@ -351,6 +381,44 @@
                         <div class="my-3">
                             <div class="d-flex justify-content-center">
                                 <img id="preview" src="{{ asset('dist/profiles/default.jpg') }}" alt="Photo Profile" class="w-50 img-thumbnail">
+                            </div>
+                        </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary text-white" data-dismiss="modal">Tutup <i class="fa-solid fa-xmark"></i></button>
+                    <button type="submit" class="btn btn-success text-white">Simpan <i class="fa-solid fa-floppy-disk"></i></button>
+                </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="resetModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Modal</h5>
+                    <button type="button" class="close" data-dismiss="modal"><span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="FormReset" action="" method="post">
+                        <div class="form-group password">
+                            <label for="NewPassword">New Password</label>
+                            <div class="input-group mb-3">
+                                <input type="password" id="NewPassword" class="form-control" name="new_password" placeholder="******" required>
+                                <div class="input-group-append">
+                                    <button onclick="showPassword(this)" class="btn btn-outline-dark" type="button"><i class="fa-regular fa-eye-slash"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group password">
+                            <label for="ConfirmPassword">Confirm Password</label>
+                            <div class="input-group mb-3">
+                                <input type="password" id="ConfirmPassword" class="form-control" name="confirm_password" placeholder="******" required>
+                                <div class="input-group-append">
+                                    <button onclick="showPassword(this)" class="btn btn-outline-dark" type="button"><i class="fa-regular fa-eye-slash"></i></button>
+                                </div>
                             </div>
                         </div>
                 </div>

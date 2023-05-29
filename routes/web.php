@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -22,6 +23,10 @@ Route::group(['middleware' => 'guest'], function(){
 Route::group(['middleware' => 'auth'], function(){
     Route::get('/logout', [AuthController::class, 'getLogout'])->name('auth.logout');
     Route::get('/dashboard', [DashboardController::class, 'getIndex'])->name('dashboard');
+
+    //UserController
+    Route::get('/profile', [UserController::class, 'getProfile'])->name('user.profile');
+    Route::put('/profile/{id}/reset-password', [UserController::class, 'putResetPassword'])->name('user.reset.password');
 
     //Prefix: Admin
     Route::group(['prefix' => 'masterdata'], function(){

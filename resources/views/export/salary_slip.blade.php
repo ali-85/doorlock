@@ -26,9 +26,6 @@
 </head>
 
 <body>
-    @php
-        $insentif = 0;
-    @endphp
     @foreach ($data as $item)
     <table id="outer">
         <tr>
@@ -58,7 +55,7 @@
                 <th>Ket</th>
             </tr>
             <tr>
-                <td>Hari Kerja</td>
+                <td><span style="float: left">Hari Kerja</span> <span style="float: right">{{ $item->hari_kerja }}</span></td>
                 <td align="center">Rp {{ number_format($item->basic_salary,0,',','.') }}</td>
                 <td align="center">Rp {{ number_format($item->salary,0,',','.') }}</td>
                 <td></td>
@@ -73,13 +70,22 @@
             @endif
             @if ($item->lembur2 > 0)
                 <tr>
-                    <td>Lembur 2</td>
+                    <td><span style="float: left">Lembur 2</span> <span style="float: right">{{ $item->lembur2 }}</span></td>
                     <td align="center">Rp 20.000</td>
-                    <td align="center">Rp {{ number_format($item->lembur2,0,',','.') }}</td>
+                    <td align="center">Rp {{ number_format((20000*$item->lembur2),0,',','.') }}</td>
+                    <td></td>
+                </tr>
+            @endif
+            @if ($item->lembur3 > 0)
+                <tr>
+                    <td><span style="float: left">Lembur 3</span> <span style="float: right">{{ $item->lembur3 }}</span></td>
+                    <td align="center">Rp 20.000</td>
+                    <td align="center">Rp {{ number_format((20000*$item->lembur3),0,',','.') }}</td>
                     <td></td>
                 </tr>
             @endif
             @php
+                $insentif = 0;
                 $ins = json_decode($item->insentif, true);
             @endphp
             @foreach ($ins as $key => $val)
@@ -96,7 +102,7 @@
             <tr>
                 <td style="border: none">Jumlah</td>
                 <td style="border: none"></td>
-                <td align="center" style="border: none">Rp {{ number_format(($item->salary+$item->lembur+$item->lembur2+$insentif),0,',','.') }}</td>
+                <td align="center" style="border: none">Rp {{ number_format(($item->salary+$item->lembur+(20000*$item->lembur2)+(20000*$item->lembur3)+$insentif),0,',','.') }}</td>
                 <td align="center" style="border: none">{{ $item->pembayaran == 1?'ATM':'CASH' }}</td>
             </tr>
         </table>

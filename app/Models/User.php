@@ -48,7 +48,7 @@ class User extends Authenticatable
             return [
                 'name' => 'required',
                 'username' => 'required|max:16|unique:users,username',
-                'email' => 'email|required|max:16|unique:users,email'
+                'email' => 'email|required|max:124|unique:users,email'
             ];
         }
     }

@@ -36,9 +36,22 @@ class SalaryTransferExport implements FromView, WithEvents, WithProperties, With
                 memp.bank_name, memp.basic_salary*SUM(vp.jam_kerja) AS salary,
                 CASE WHEN DAYNAME(vp.jam_masuk) = 'Sunday' THEN 7500*SUM(vp.lembur) ELSE 5000*SUM(vp.lembur) END AS lembur,
                 CASE WHEN DAYNAME(vp.jam_masuk) = 'Sunday' THEN 20000*SUM(vp.lembur2) ELSE 0 END AS lembur2,
+                20000*SUM(lembur3) AS lembur3, JSON_ARRAYAGG(JSON_OBJECT('category', laa.category, 'remark', laa.remark, 'value', laa.value_1A)) AS insentif,
                 (SELECT transaction_id FROM mrequest_payment WHERE start_date = '2023-04-13' AND end_date = '2023-04-19') AS transaction_id")
             ->join('memployees AS memp', 'memp.id', '=', 'vp.user_id')
             ->leftJoin('mbanks AS bank', 'bank.id', '=', 'memp.bank_account')
+            ->leftJoin(
+                'tr_payroll AS trp',
+                'trp.collect_attendance_id',
+                '=',
+                'vp.id'
+            )
+            ->leftJoin(
+                'leave_and_absences AS laa',
+                'laa.id',
+                '=',
+                'trp.leave_absence_id'
+            )
             ->where('memp.payment_mode', $this->mode)
             ->where('memp.transfer_type', 1)
             ->whereBetween(DB::raw('DATE(vp.jam_masuk)'), [$this->start, $this->end])

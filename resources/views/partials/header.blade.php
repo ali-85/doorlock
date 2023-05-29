@@ -7,7 +7,7 @@
         ***********************************-->
     <div class="nav-header" style="background-color: #3F51B5">
         <div class="brand-logo">
-            <a href="index.html">
+            <a href="{{ route('dashboard') }}">
                 <b class="logo-abbr">
                     <h6 class="text-white"><Strong>PT Cahaya Sukses Plastindo</Strong></h6>
                 </b>
@@ -100,7 +100,7 @@
                             <div class="dropdown-content-body">
                                 <ul>
                                     <li>
-                                        <a href="app-profile.html"><i class="icon-user"></i> <span>Profile</span></a>
+                                        <a href="{{ route('user.profile') }}"><i class="icon-user"></i> <span>Profile</span></a>
                                     </li>
                                     <hr class="my-2">
                                     <li>

@@ -25,9 +25,10 @@ class AccountController extends Controller
             return DataTables::of($accounts)
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
+                    $btn_password = '<button class="btn btn-warning text-white" onclick="resetPassword('.$row->id.')" type="button"><i class="icon-key"></i></button>';
                     $btn_edit = '<button class="btn btn-info" onclick="edit('.$row->id.')" type="button"><i class="icon-pencil"></i></button>';
                     $btn_delete = '<button class="btn btn-danger" onclick="destroy('.$row->id.')" type="button"><i class="icon-trash"></i></button>';
-                    $btn = '<div class="btn-group">'.$btn_edit.$btn_delete.'</div>';
+                    $btn = '<div class="btn-group">'.$btn_password.$btn_edit.$btn_delete.'</div>';
                     return $btn;
                 })
                 ->rawColumns(['action'])
@@ -155,6 +156,46 @@ class AccountController extends Controller
                 return response()->json([
                     'status' => 'success',
                     'message' => 'Akun berhasil diubah!'
+                ], 200);
+            } else {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Akun tidak ditemukan!'
+                ], 404);
+            }
+        }
+    }
+    public function reset(Request $request, $id)
+    {
+        $input = [
+            'new_password' => $request->new_password,
+            'confirm_password' => $request->confirm_password,
+        ];
+        $validator = Validator::make($input, [
+            'new_password' => 'required|same:confirm_password',
+            'confirm_password' => 'required|same:new_password'
+        ], [
+            'required' => 'Password harus diisi',
+            'same' => 'Cek kembali Password baru dan Konfirmasi password'
+        ], [
+            'new_password' => 'Password baru',
+            'confirm_password' => 'Konfirmasi Password'
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'fields' => $validator->errors()
+            ], 401);
+        } else {
+            $akun = User::find($id);
+            if($akun){
+                $new = [
+                    'password' => Hash::make($input['new_password'])
+                ];
+                $akun->update($new);
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Password akun berhasil direset!'
                 ], 200);
             } else {
                 return response()->json([

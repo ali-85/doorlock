@@ -15,6 +15,15 @@
         <th>Receiver Cust Residence</th>
     </tr>
     @foreach ($data as $item)
+        @php
+            $insentif = 0;
+            $ins = json_decode($item->insentif, true);
+            foreach ($ins as $key => $val) {
+                if ($val['category'] != null) {
+                    ($val['category'] == 'payroll deductions')?$insentif -= $val['value']:$insentif += $val['value'];
+                }
+            }
+        @endphp
         <tr>
             <td>{{ $loop->iteration }}</td>
             <td>{{ $item->transaction_id . '' . $loop->iteration }}</td>
@@ -22,7 +31,7 @@
             <td></td>
             <td align="center">{{ $item->credited_accont }}</td>
             <td>{{ $item->bank_name }}</td>
-            <td align="center">{{ number_format($item->salary + $item->lembur + $item->lembur2, 2, ',', '.') }}</td>
+            <td align="center">{{ number_format($item->salary + $item->lembur + $item->lembur2 + $item->lembur3 + $insentif, 2, ',', '.') }}</td>
             <td align="center">{{ $item->nip }}</td>
             <td></td>
             <td></td>

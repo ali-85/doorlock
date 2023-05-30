@@ -6,6 +6,7 @@
         rel="stylesheet" />
     <link href="{{ asset('assets/plugins/datatables.net-buttons-bs5/css/buttons.bootstrap5.min.css') }}" rel="stylesheet" />
     <link rel="stylesheet" href="{{ asset('assets/plugins/toastr/css/toastr.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/plugins/bootstrap-material-datetimepicker/css/bootstrap-material-datetimepicker.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/plugins/sweetalert2/dist/sweetalert2.min.css') }}">
 @endpush
 @push('scripts')
@@ -24,6 +25,8 @@
     <script src="{{ asset('assets/plugins/pdfmake/build/vfs_fonts.js') }}"></script>
     <script src="{{ asset('assets/plugins/sweetalert2/dist/sweetalert2.min.js') }}"></script>
     <script src="{{ asset('assets/icons/font-awesome/js/all.min.js') }}"></script>
+    <script src="{{ asset('assets/plugins/moment/moment.js') }}"></script>
+    <script src="{{ asset('assets/plugins/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js') }}"></script>
     <script src="{{ asset('assets/plugins/toastr/js/toastr.min.js') }}"></script>
     <script>
         let url = '';
@@ -42,7 +45,14 @@
             return method;
         }
         var Table = $('#daTable').DataTable({
-            ajax: "{{ route('absence.index') }}",
+            ajax: {
+                url: "{{ route('absence.index') }}",
+                data: function(d){
+                    d.start = $('input[name="start"]').val(),
+                    d.finish = $('input[name="finish"]').val()
+                },
+                type: "GET"
+            },
             processing: true,
             serverSide: true,
             responsive: true,
@@ -103,6 +113,14 @@
                 }
             ],
         });
+
+        function setMinDate(that){
+            $('input[name="finish"]').bootstrapMaterialDatePicker('setMinDate', $(that).val());
+        }
+
+        function filter(){
+            Table.ajax.reload(null, false);
+        }
 
         function create() {
             url = "{{ route('leave-absence.store') }}";
@@ -187,6 +205,10 @@
                 $('.modal-body form')[0].reset();
                 $('input[name="_method"]').remove();
             })
+            $('input[name="start"], input[name="finish"]').bootstrapMaterialDatePicker({
+                weekStart: 0,
+                time: false
+            });
             $('.modal-body form').on('submit', function(e) {
                 e.preventDefault();
                 let formData = new FormData($(this)[0]);
@@ -236,6 +258,19 @@
                             <div class="card">
                                 <div class="card-body">
                                     <h5 class="card-title">Report Absence Table</h5>
+                                    <div class="basic-form">
+                                        <div class="form-row align-items-center">
+                                            <div class="col-2">
+                                                <input class="form-control" type="text" name="start" autocomplete="off" placeholder="Start Date" onchange="setMinDate(this)">
+                                            </div>
+                                            <div class="col-2">
+                                                <input class="form-control" type="text" name="finish" autocomplete="off" placeholder="Last Date">
+                                            </div>
+                                            <div class="col-2">
+                                                <button onclick="filter()" class="btn btn-primary"><i class="fas fa-filter"></i> Filter</button>
+                                            </div>
+                                        </div>
+                                    </div>
                                     <div class="table-responsive">
                                         <table class="table table-striped table-bordered" id="daTable">
                                             <thead>
@@ -271,7 +306,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Modal</h5>
+                    <h5 class="modal-title">Detail Absence</h5>
                     <button type="button" class="close" data-dismiss="modal"><span>&times;</span>
                     </button>
                 </div>

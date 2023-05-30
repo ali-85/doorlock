@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Report;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
+use Illuminate\Support\Facades\DB;
 use App\Models\collectAttendance as collect;
 
 class AbsenceController extends Controller
@@ -17,8 +18,14 @@ class AbsenceController extends Controller
     public function index(Request $request)
     {
         if ($request->wantsJson()) {
-            $data = collect::join('memployees', 'memployees.id', '=', 'collect_attendances.user_id')
-                ->orderBy('id', 'DESC')->limit(1000)->get(['collect_attendances.*', 'memployees.nama']);
+            if ($request->start && $request->finish) {
+                $data = collect::join('memployees', 'memployees.id', '=', 'collect_attendances.user_id')
+                ->whereBetween(DB::raw('DATE(jam_masuk)'), [$request->start, $request->finish])
+                ->orderBy('id', 'DESC')->get(['collect_attendances.*', 'memployees.nama']);
+            } else {
+                $data = collect::join('memployees', 'memployees.id', '=', 'collect_attendances.user_id')
+                    ->orderBy('id', 'DESC')->limit(1000)->get(['collect_attendances.*', 'memployees.nama']);
+            }
             return DataTables::of($data)
                 ->editColumn('jam_keluar', function ($row) {
                     return empty($row->jam_Keluar)?'Belum keluar':$row->jam_Keluar;

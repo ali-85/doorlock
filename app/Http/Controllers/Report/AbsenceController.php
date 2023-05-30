@@ -19,12 +19,14 @@ class AbsenceController extends Controller
     {
         if ($request->wantsJson()) {
             if ($request->start && $request->finish) {
+                $start = date('Y-m-d', strtotime($request->start));
+                $finish = date('Y-m-d', strtotime($request->finish));
                 $data = collect::join('memployees', 'memployees.id', '=', 'collect_attendances.user_id')
-                ->whereBetween(DB::raw('DATE(jam_masuk)'), [$request->start, $request->finish])
-                ->orderBy('id', 'DESC')->get(['collect_attendances.*', 'memployees.nama']);
+                    ->whereBetween(DB::raw('DATE(jam_masuk)'), [$start, $finish])
+                    ->orderBy('id', 'DESC')->get(['collect_attendances.*', 'memployees.nama']);
             } else {
                 $data = collect::join('memployees', 'memployees.id', '=', 'collect_attendances.user_id')
-                    ->orderBy('id', 'DESC')->limit(1000)->get(['collect_attendances.*', 'memployees.nama']);
+                    ->take(1000)->orderBy('id', 'DESC')->get(['collect_attendances.*', 'memployees.nama']);
             }
             return DataTables::of($data)
                 ->editColumn('jam_keluar', function ($row) {

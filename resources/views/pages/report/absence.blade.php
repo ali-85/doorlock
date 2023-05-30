@@ -46,12 +46,12 @@
         }
         var Table = $('#daTable').DataTable({
             ajax: {
-                url: "{{ route('absence.index') }}",
+                url: "{{ route('absence.list') }}",
                 data: function(d){
                     d.start = $('input[name="start"]').val(),
                     d.finish = $('input[name="finish"]').val()
                 },
-                type: "GET"
+                type: "POST"
             },
             processing: true,
             serverSide: true,

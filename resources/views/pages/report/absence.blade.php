@@ -6,7 +6,8 @@
         rel="stylesheet" />
     <link href="{{ asset('assets/plugins/datatables.net-buttons-bs5/css/buttons.bootstrap5.min.css') }}" rel="stylesheet" />
     <link rel="stylesheet" href="{{ asset('assets/plugins/toastr/css/toastr.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/plugins/bootstrap-material-datetimepicker/css/bootstrap-material-datetimepicker.css') }}">
+    <link rel="stylesheet"
+        href="{{ asset('assets/plugins/bootstrap-material-datetimepicker/css/bootstrap-material-datetimepicker.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/plugins/sweetalert2/dist/sweetalert2.min.css') }}">
 @endpush
 @push('scripts')
@@ -26,7 +27,8 @@
     <script src="{{ asset('assets/plugins/sweetalert2/dist/sweetalert2.min.js') }}"></script>
     <script src="{{ asset('assets/icons/font-awesome/js/all.min.js') }}"></script>
     <script src="{{ asset('assets/plugins/moment/moment.js') }}"></script>
-    <script src="{{ asset('assets/plugins/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js') }}"></script>
+    <script src="{{ asset('assets/plugins/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js') }}">
+    </script>
     <script src="{{ asset('assets/plugins/toastr/js/toastr.min.js') }}"></script>
     <script>
         let url = '';
@@ -46,22 +48,18 @@
         }
         var Table = $('#daTable').DataTable({
             ajax: {
-                url: "{{ route('absence.list') }}",
-                data: function(d){
-                    d.start = $('input[name="start"]').val(),
-                    d.finish = $('input[name="finish"]').val()
-                },
-                type: "POST"
+                url: "{{ route('absence.index') }}",
+                type: "GET",
+                data: function(data) {
+                    data.awal = $('input[name="start"]').val();
+                    data.akhir = $('input[name="finish"]').val();
+                }
             },
             processing: true,
             serverSide: true,
             responsive: true,
-            responsive: true,
             dom: '<"row"<"col-sm-4"l><"col-sm-5"B><"col-sm-3"fr>>t<"row"<"col-sm-5"i><"col-sm-7"p>>',
             columns: [{
-                    data: 'id'
-                },
-                {
                     data: 'nama'
                 },
                 {
@@ -81,10 +79,10 @@
                 },
             ],
             columnDefs: [{
-                "targets": [0, 6],
+                "targets": [0, 5],
                 "orderable": false
             }, {
-                "targets": [5],
+                "targets": [4],
                 "visible": false
             }],
             buttons: [{
@@ -114,11 +112,11 @@
             ],
         });
 
-        function setMinDate(that){
+        function setMinDate(that) {
             $('input[name="finish"]').bootstrapMaterialDatePicker('setMinDate', $(that).val());
         }
 
-        function filter(){
+        function filter() {
             Table.ajax.reload(null, false);
         }
 
@@ -136,7 +134,7 @@
                 let data = res.data;
                 $('input#Nama').val(data.nama);
                 $('input#JamMasuk').val(data.jam_masuk);
-                $('input#JamKeluar').val(data.jam_Keluar != null?data.jam_Keluar:'Belum keluar');
+                $('input#JamKeluar').val(data.jam_Keluar != null ? data.jam_Keluar : 'Belum keluar');
                 $('input#Keterangan').val(data.keterangan);
                 $('input#KeteranganDetail').val(data.keterangan_detail);
                 $('img#absence-photo').attr('src', '{!! asset("'+data.jam_masuk_photo_path+'") !!}');
@@ -236,8 +234,8 @@
 @endpush
 @section('content')
     <!--**********************************
-                                    Content body start
-                                ***********************************-->
+                                                    Content body start
+                                                ***********************************-->
     <div class="content-body">
 
         <div class="row page-titles mx-0">
@@ -261,13 +259,16 @@
                                     <div class="basic-form">
                                         <div class="form-row align-items-center">
                                             <div class="col-2">
-                                                <input class="form-control" type="text" name="start" autocomplete="off" placeholder="Start Date" onchange="setMinDate(this)">
+                                                <input class="form-control" type="text" name="start" autocomplete="off"
+                                                    placeholder="Start Date" onchange="setMinDate(this)">
                                             </div>
                                             <div class="col-2">
-                                                <input class="form-control" type="text" name="finish" autocomplete="off" placeholder="Last Date">
+                                                <input class="form-control" type="text" name="finish" autocomplete="off"
+                                                    placeholder="Last Date">
                                             </div>
                                             <div class="col-2">
-                                                <button onclick="filter()" class="btn btn-primary"><i class="fas fa-filter"></i> Filter</button>
+                                                <button onclick="filter()" class="btn btn-primary"><i
+                                                        class="fas fa-filter"></i> Filter</button>
                                             </div>
                                         </div>
                                     </div>
@@ -275,7 +276,6 @@
                                         <table class="table table-striped table-bordered" id="daTable">
                                             <thead>
                                                 <tr>
-                                                    <th>#</th>
                                                     <th>NAMA</th>
                                                     <th>JAM MASUK</th>
                                                     <th>JAM KELUAR</th>
@@ -299,8 +299,8 @@
         <!-- #/ container -->
     </div>
     <!--**********************************
-            Content body end
-        ***********************************-->
+                            Content body end
+                        ***********************************-->
     <!-- Modal -->
     <div class="modal fade" id="basicModal">
         <div class="modal-dialog" role="document">
@@ -330,7 +330,8 @@
                         </div>
                         <div class="form-group">
                             <label for="KeteranganDetail">Keterangan Detail :</label>
-                            <input type="text" name="txtKeteranganDetail" id="KeteranganDetail" class="form-control" readonly>
+                            <input type="text" name="txtKeteranganDetail" id="KeteranganDetail" class="form-control"
+                                readonly>
                         </div>
                         <div class="form-group">
                             <label for="absence-photo">Foto Masuk :</label>

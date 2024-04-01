@@ -18,29 +18,42 @@ class AbsenceController extends Controller
     public function index(Request $request)
     {
         if ($request->wantsJson()) {
-            if ($request->start && $request->finish) {
-                $start = date('Y-m-d', strtotime($request->start));
-                $finish = date('Y-m-d', strtotime($request->finish));
-                $data = collect::join('memployees', 'memployees.id', '=', 'collect_attendances.user_id')
-                    ->whereBetween(DB::raw('DATE(jam_masuk)'), [$start, $finish])
-                    ->orderBy('id', 'DESC')->get(['collect_attendances.*', 'memployees.nama']);
-            } else {
-                $data = collect::join('memployees', 'memployees.id', '=', 'collect_attendances.user_id')
-                    ->take(1000)->orderBy('id', 'DESC')->get(['collect_attendances.*', 'memployees.nama']);
-            }
+            $data = collect::select('collect_attendances.*', 'memployees.nama')
+                ->join(
+                    'memployees',
+                    'memployees.id',
+                    '=',
+                    'collect_attendances.user_id'
+                )
+                ->when(
+                    $request->awal && $request->akhir,
+                    function ($q) use ($request) {
+                        $q->whereBetween(
+                            DB::raw('DATE(collect_attendances.jam_masuk)'),
+                            [$request->awal, $request->akhir]
+                        );
+                    },
+                    function ($q) {
+                        $q->whereBetween(
+                            DB::raw('DATE(collect_attendances.jam_masuk)'),
+                            [date('Y-m-d', strtotime('-7 days')), date('Y-m-d')]
+                        );
+                    }
+                )
+                ->orderBy('collect_attendances.id', 'DESC')
+                ->get();
             return DataTables::of($data)
                 ->editColumn('jam_keluar', function ($row) {
-                    return empty($row->jam_Keluar)?'Belum keluar':$row->jam_Keluar;
+                    return empty($row->jam_Keluar)
+                        ? 'Belum keluar'
+                        : $row->jam_Keluar;
                 })
                 ->addColumn('action', function ($row) {
                     $btn_show =
                         '<button class="btn btn-primary" onclick="show(' .
                         $row->id .
                         ')" type="button"><i class="icon-eye"></i></button>';
-                    $btn =
-                        '<div class="btn-group">' .
-                        $btn_show .
-                        '</div>';
+                    $btn = '<div class="btn-group">' . $btn_show . '</div>';
                     return $btn;
                 })
                 ->rawColumns(['action'])
@@ -80,21 +93,37 @@ class AbsenceController extends Controller
     public function show($id)
     {
         $data = collect::select(
-                'memployees.nama', 'collect_attendances.jam_masuk', 'collect_attendances.jam_masuk_photo_path', 'collect_attendances.jam_Keluar_photo_path',
-                'collect_attendances.jam_Keluar', 'collect_attendances.keterangan', 'collect_attendances.keterangan_detail'
-                )
-            ->join('memployees', 'memployees.id', '=', 'collect_attendances.user_id')
+            'memployees.nama',
+            'collect_attendances.jam_masuk',
+            'collect_attendances.jam_masuk_photo_path',
+            'collect_attendances.jam_Keluar_photo_path',
+            'collect_attendances.jam_Keluar',
+            'collect_attendances.keterangan',
+            'collect_attendances.keterangan_detail'
+        )
+            ->join(
+                'memployees',
+                'memployees.id',
+                '=',
+                'collect_attendances.user_id'
+            )
             ->find($id);
         if ($data) {
-            return response()->json([
-                'status' => 'success',
-                'data' => $data
-            ], 200);
+            return response()->json(
+                [
+                    'status' => 'success',
+                    'data' => $data,
+                ],
+                200
+            );
         } else {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Absensi tidak ditemukan'
-            ], 404);
+            return response()->json(
+                [
+                    'status' => 'error',
+                    'message' => 'Absensi tidak ditemukan',
+                ],
+                404
+            );
         }
     }
 

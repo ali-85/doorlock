@@ -47,7 +47,7 @@
             return method;
         }
         var Table = $('#daTable').DataTable({
-            ajax: "{{ route('role.index') }}",
+            ajax: "{{ route('menu.index') }}",
             processing: true,
             serverSide: true,
             responsive: true,
@@ -57,25 +57,10 @@
                     data: 'DT_RowIndex'
                 },
                 {
-                    data: 'name'
+                    data: 'title'
                 },
                 {
-                    data: 'has_menu',
-                    name: 'has_menu',
-                    render: function(data) {
-                        if (data.length > 0) {
-                            let list = '';
-                            $.each(data, function(key, item) {
-                                list += '<span class="badge badge-dark mb-1 mr-1">' + item.submenu
-                                    .menu
-                                    .title + ' | ' + item.submenu
-                                    .submenuTitle + '</span>';
-                            })
-                            return list;
-                        } else {
-                            return '<span class="badge badge-dark">No List Access</span>';
-                        }
-                    }
+                    data: 'icon'
                 },
                 {
                     data: 'action'
@@ -113,29 +98,31 @@
         });
 
         function create() {
-            url = "{{ route('role.store') }}";
+            url = "{{ route('menu.store') }}";
             method = 'POST';
             $('.modal-header h5').html("Tambah " + title);
             $('#basicModal').modal('show');
         }
 
         function edit(id) {
-            let editUrl = "{{ route('role.edit', ':id') }}";
+            let editUrl = "{{ route('menu.edit', ':id') }}";
             editUrl = editUrl.replace(':id', id);
-            url = "{{ route('role.update', ':id') }}";
+            url = "{{ route('menu.update', ':id') }}";
             url = url.replace(':id', id);
             method = "POST";
             $('.modal-body form').append('<input type="hidden" name="_method" value="PUT" />');
             $.get(editUrl, function(res) {
                 $('.modal-header h5').html("Edit " + title);
-                $('input[name="name"]').val(res.data.name);
-                $('select[name="submenu_id[]"]').selectpicker('val', res.submenus);
+                $('input[name="title"]').val(res.data.title);
+                $('input[name="icon"]').val(res.data.icon);
+                $('input[name="url"]').val(res.data.url);
+                $('input[name="route"]').val(res.data.route);
                 $('#basicModal').modal('show');
             })
         }
 
         function destroy(id) {
-            let deleteUrl = "{{ route('role.destroy', ':id') }}";
+            let deleteUrl = "{{ route('menu.destroy', ':id') }}";
             deleteUrl = deleteUrl.replace(':id', id);
             swal({
                 title: 'Hapus data ini?',
@@ -190,13 +177,8 @@
             }
         }
         $(document).ready(function() {
-            $('select[name="submenu_id[]"]').selectpicker({
-                liveSearch: true,
-                header: "Pilih Role"
-            });
             $('#basicModal').on('hide.bs.modal', function() {
                 $('.modal-body form')[0].reset();
-                $('select[name="submenu_id[]"]').selectpicker('val', '');
                 $('input[name="_method"]').remove();
             })
             $('.modal-body form').on('submit', function(e) {
@@ -227,15 +209,15 @@
 @endpush
 @section('content')
     <!--**********************************
-                                                            Content body start
-                                                        ***********************************-->
+                                        Content body start
+                                    ***********************************-->
     <div class="content-body">
 
         <div class="row page-titles mx-0">
             <div class="col p-md-0">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="javascript:void(0)">Dashboard</a></li>
-                    <li class="breadcrumb-item active"><a href="javascript:void(0)">Sub Departments</a></li>
+                    <li class="breadcrumb-item active"><a href="javascript:void(0)">{{ $title }}</a></li>
                 </ol>
             </div>
         </div>
@@ -256,8 +238,8 @@
                                             <thead>
                                                 <tr>
                                                     <th>#</th>
-                                                    <th>ROLE</th>
-                                                    <th>ACCESS</th>
+                                                    <th>TITLE</th>
+                                                    <th>ICON</th>
                                                     <th>AKSI</th>
                                                 </tr>
                                             </thead>
@@ -276,8 +258,8 @@
         <!-- #/ container -->
     </div>
     <!--**********************************
-                                    Content body end
-                                ***********************************-->
+                Content body end
+            ***********************************-->
     <!-- Modal -->
     <div class="modal fade" id="basicModal">
         <div class="modal-dialog" role="document">
@@ -290,19 +272,23 @@
                 <div class="modal-body">
                     <form action="" method="post">
                         <div class="form-group">
-                            <label for="Name">Role</label>
-                            <input type="text" id="Name" class="form-control" name="name" placeholder="Nama Role"
+                            <label for="Title">Menu Title</label>
+                            <input type="text" id="Title" class="form-control" name="title"
+                                placeholder="Menu Title" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="Icon">Menu Icon</label>
+                            <input type="text" id="Icon" class="form-control" name="icon" placeholder="Menu Icon"
                                 required>
                         </div>
                         <div class="form-group">
-                            <label for="submenu">Submenu</label>
-                            <select name="submenu_id[]" id="submenu" class="form-control" multiple>
-                                @foreach ($submenus as $item)
-                                    <option value="{{ $item->id }}">
-                                        {{ $item->menu->title . ' | ' . $item->submenuTitle }}
-                                    </option>
-                                @endforeach
-                            </select>
+                            <label for="url">Menu URL</label>
+                            <input type="text" id="url" class="form-control" name="url" placeholder="Menu URL">
+                        </div>
+                        <div class="form-group">
+                            <label for="route">Menu Route</label>
+                            <input type="text" id="route" class="form-control" name="route"
+                                placeholder="Menu Route">
                         </div>
                 </div>
                 <div class="modal-footer">

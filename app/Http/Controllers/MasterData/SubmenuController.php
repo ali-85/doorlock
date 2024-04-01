@@ -1,46 +1,33 @@
 <?php
 
-namespace App\Http\Controllers\MasterData;
+namespace App\Http\Controllers\masterData;
 
 use App\Http\Controllers\Controller;
-use App\Models\RoleHasMenu;
+use App\Models\Menu;
+use App\Models\Submenu;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\DataTables;
-use App\Models\RoleModel as Role;
-use App\Models\Submenu;
 
-class RoleController extends Controller
+class SubmenuController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    private function __storeRoleMenu($role_id, $submenu_id, $update = false)
-    {
-        $result = [];
-        foreach ($submenu_id as $key => $val) {
-            $result[] = [
-                'role_id' => $role_id,
-                'submenu_id' => $val,
-            ];
-        }
-        if ($update) {
-            RoleHasMenu::where('role_id', $role_id)->delete();
-            RoleHasMenu::insert($result);
-        } else {
-            RoleHasMenu::insert($result);
-        }
-        return true;
-    }
-
     public function index(Request $request)
     {
         if ($request->wantsJson()) {
-            $roles = Role::with('hasMenu.submenu.menu')->latest();
-            return DataTables::of($roles)
+            $submenus = Submenu::with('menu')->latest();
+            return DataTables::of($submenus)
                 ->addIndexColumn()
+                ->editColumn('menu_id', function ($row) {
+                    return $row->menu->title;
+                })
+                ->editColumn('submenuIcon', function ($row) {
+                    return '<i class="' . $row->submenuIcon . '"></i>';
+                })
                 ->addColumn('action', function ($row) {
                     $btn_edit =
                         '<button class="btn btn-info" onclick="edit(' .
@@ -57,14 +44,14 @@ class RoleController extends Controller
                         '</div>';
                     return $btn;
                 })
-                ->rawColumns(['action'])
+                ->rawColumns(['submenuIcon', 'action'])
                 ->make(true);
         } else {
             $data = [
-                'title' => 'Role',
-                'submenus' => Submenu::with('menu')->get(),
+                'title' => 'Submenu',
+                'menus' => Menu::all(),
             ];
-            return view('pages.masterdata.role', $data);
+            return view('pages.masterdata.submenu', $data);
         }
     }
 
@@ -86,29 +73,36 @@ class RoleController extends Controller
      */
     public function store(Request $request)
     {
-        $input = $request->only(['name', 'guard_name']);
+        $input = $request->only([
+            'created_by',
+            'updated_by',
+            'menu_id',
+            'submenuTitle',
+            'submenuIcon',
+            'submenuUrl',
+            'submenuRoute',
+        ]);
         $validator = Validator::make(
             $input,
-            role::rules(),
+            Submenu::rules(),
             [],
-            role::attributes()
+            Submenu::attributes()
         );
         if ($validator->fails()) {
             return response()->json(
                 [
                     'status' => 'error',
-                    'fields' => $validator->errors(),
+                    'errors' => $validator->errors(),
                 ],
-                401
+                400
             );
         } else {
-            $create = role::create($input);
+            $create = Submenu::create($input);
             if ($create) {
-                $this->__storeRoleMenu($create->id, $request->submenu_id);
                 return response()->json(
                     [
                         'status' => 'success',
-                        'message' => 'Role berhasil ditambah',
+                        'message' => 'Submenu berhasil ditambah',
                     ],
                     200
                 );
@@ -143,15 +137,12 @@ class RoleController extends Controller
      */
     public function edit($id)
     {
-        $dept = Role::find($id);
-        if ($dept) {
+        $data = Submenu::find($id);
+        if ($data) {
             return response()->json(
                 [
                     'status' => 'success',
-                    'data' => $dept,
-                    'submenus' => RoleHasMenu::where('role_id', $id)->pluck(
-                        'submenu_id'
-                    ),
+                    'data' => $data,
                 ],
                 200
             );
@@ -159,7 +150,7 @@ class RoleController extends Controller
             return response()->json(
                 [
                     'status' => 'error',
-                    'message' => 'Role tidak ditemukan!',
+                    'message' => 'Data tidak ditemukan',
                 ],
                 404
             );
@@ -175,30 +166,36 @@ class RoleController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $input = $request->only(['name', 'guard_name']);
+        $input = $request->only([
+            'updated_by',
+            'menu_id',
+            'submenuTitle',
+            'submenuIcon',
+            'submenuUrl',
+            'submenuRoute',
+        ]);
         $validator = Validator::make(
             $input,
-            Role::rules(),
+            Submenu::rules(),
             [],
-            Role::attributes()
+            Submenu::attributes()
         );
         if ($validator->fails()) {
             return response()->json(
                 [
                     'status' => 'error',
-                    'fields' => $validator->errors(),
+                    'errors' => $validator->errors(),
                 ],
-                401
+                400
             );
         } else {
-            $dept = Role::find($id);
-            if ($dept) {
-                $dept->update($input);
-                $this->__storeRoleMenu($id, $request->submenu_id, true);
+            $data = Submenu::find($id);
+            if ($data) {
+                $data->update($input);
                 return response()->json(
                     [
                         'status' => 'success',
-                        'message' => 'Role berhasil diubah!',
+                        'message' => 'Submenu berhasil diubah',
                     ],
                     200
                 );
@@ -206,7 +203,7 @@ class RoleController extends Controller
                 return response()->json(
                     [
                         'status' => 'error',
-                        'message' => 'Role tidak ditemukan!',
+                        'message' => 'Data tidak ditemukan',
                     ],
                     404
                 );
@@ -222,13 +219,13 @@ class RoleController extends Controller
      */
     public function destroy($id)
     {
-        $dept = Role::find($id);
-        if ($dept) {
-            $dept->delete();
+        $data = Submenu::find($id);
+        if ($data) {
+            $data->delete();
             return response()->json(
                 [
                     'status' => 'success',
-                    'message' => 'Role berhasil dihapus!',
+                    'message' => 'Submenu berhasil dihapus',
                 ],
                 200
             );
@@ -236,7 +233,7 @@ class RoleController extends Controller
             return response()->json(
                 [
                     'status' => 'error',
-                    'message' => 'Role tidak ditemukan!',
+                    'message' => 'Data tidak ditemukan',
                 ],
                 404
             );

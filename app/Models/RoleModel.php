@@ -9,20 +9,23 @@ class RoleModel extends Model
 {
     use HasFactory;
     protected $table = 'roles';
-    protected $fillable = [
-        'name', 'guard_name'
-    ];
+    protected $fillable = ['name', 'guard_name'];
+
+    public function hasMenu()
+    {
+        return $this->hasMany(RoleHasMenu::class, 'role_id');
+    }
 
     public static function rules()
     {
         return [
-            'name' => 'required'
+            'name' => 'required',
         ];
     }
     public static function attributes()
     {
         return [
-            'name' => 'Nama Role'
+            'name' => 'Nama Role',
         ];
     }
 }

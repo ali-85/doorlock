@@ -47,7 +47,7 @@
             return method;
         }
         var Table = $('#daTable').DataTable({
-            ajax: "{{ route('role.index') }}",
+            ajax: "{{ route('submenu.index') }}",
             processing: true,
             serverSide: true,
             responsive: true,
@@ -57,25 +57,19 @@
                     data: 'DT_RowIndex'
                 },
                 {
-                    data: 'name'
+                    data: 'menu_id'
                 },
                 {
-                    data: 'has_menu',
-                    name: 'has_menu',
-                    render: function(data) {
-                        if (data.length > 0) {
-                            let list = '';
-                            $.each(data, function(key, item) {
-                                list += '<span class="badge badge-dark mb-1 mr-1">' + item.submenu
-                                    .menu
-                                    .title + ' | ' + item.submenu
-                                    .submenuTitle + '</span>';
-                            })
-                            return list;
-                        } else {
-                            return '<span class="badge badge-dark">No List Access</span>';
-                        }
-                    }
+                    data: 'submenuTitle'
+                },
+                {
+                    data: 'submenuIcon'
+                },
+                {
+                    data: 'submenuUrl'
+                },
+                {
+                    data: 'submenuRoute'
                 },
                 {
                     data: 'action'
@@ -113,29 +107,32 @@
         });
 
         function create() {
-            url = "{{ route('role.store') }}";
+            url = "{{ route('submenu.store') }}";
             method = 'POST';
             $('.modal-header h5').html("Tambah " + title);
             $('#basicModal').modal('show');
         }
 
         function edit(id) {
-            let editUrl = "{{ route('role.edit', ':id') }}";
+            let editUrl = "{{ route('submenu.edit', ':id') }}";
             editUrl = editUrl.replace(':id', id);
-            url = "{{ route('role.update', ':id') }}";
+            url = "{{ route('submenu.update', ':id') }}";
             url = url.replace(':id', id);
             method = "POST";
             $('.modal-body form').append('<input type="hidden" name="_method" value="PUT" />');
             $.get(editUrl, function(res) {
                 $('.modal-header h5').html("Edit " + title);
-                $('input[name="name"]').val(res.data.name);
-                $('select[name="submenu_id[]"]').selectpicker('val', res.submenus);
+                $('select#Menu').selectpicker('val', res.data.menu_id);
+                $('input[name="submenuTitle"]').val(res.data.submenuTitle);
+                $('input[name="submenuIcon"]').val(res.data.submenuIcon);
+                $('input[name="submenuUrl"]').val(res.data.submenuUrl);
+                $('input[name="submenuRoute"]').val(res.data.submenuRoute);
                 $('#basicModal').modal('show');
             })
         }
 
         function destroy(id) {
-            let deleteUrl = "{{ route('role.destroy', ':id') }}";
+            let deleteUrl = "{{ route('submenu.destroy', ':id') }}";
             deleteUrl = deleteUrl.replace(':id', id);
             swal({
                 title: 'Hapus data ini?',
@@ -190,14 +187,14 @@
             }
         }
         $(document).ready(function() {
-            $('select[name="submenu_id[]"]').selectpicker({
+            $('select#Menu').selectpicker({
                 liveSearch: true,
-                header: "Pilih Role"
+                header: "Pilih Menu"
             });
             $('#basicModal').on('hide.bs.modal', function() {
                 $('.modal-body form')[0].reset();
-                $('select[name="submenu_id[]"]').selectpicker('val', '');
                 $('input[name="_method"]').remove();
+                $('select#Menu').selectpicker('val', '');
             })
             $('.modal-body form').on('submit', function(e) {
                 e.preventDefault();
@@ -235,7 +232,7 @@
             <div class="col p-md-0">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="javascript:void(0)">Dashboard</a></li>
-                    <li class="breadcrumb-item active"><a href="javascript:void(0)">Sub Departments</a></li>
+                    <li class="breadcrumb-item active"><a href="javascript:void(0)">{{ $title }}</a></li>
                 </ol>
             </div>
         </div>
@@ -256,8 +253,11 @@
                                             <thead>
                                                 <tr>
                                                     <th>#</th>
-                                                    <th>ROLE</th>
-                                                    <th>ACCESS</th>
+                                                    <th>MENU</th>
+                                                    <th>TITLE</th>
+                                                    <th>ICON</th>
+                                                    <th>URL</th>
+                                                    <th>ROUTE</th>
                                                     <th>AKSI</th>
                                                 </tr>
                                             </thead>
@@ -290,19 +290,32 @@
                 <div class="modal-body">
                     <form action="" method="post">
                         <div class="form-group">
-                            <label for="Name">Role</label>
-                            <input type="text" id="Name" class="form-control" name="name" placeholder="Nama Role"
-                                required>
-                        </div>
-                        <div class="form-group">
-                            <label for="submenu">Submenu</label>
-                            <select name="submenu_id[]" id="submenu" class="form-control" multiple>
-                                @foreach ($submenus as $item)
-                                    <option value="{{ $item->id }}">
-                                        {{ $item->menu->title . ' | ' . $item->submenuTitle }}
-                                    </option>
+                            <label for="Menu">Menu</label>
+                            <select name="menu_id" id="Menu" class="form-control" required>
+                                @foreach ($menus as $item)
+                                    <option value="{{ $item->id }}">{{ $item->title }}</option>
                                 @endforeach
                             </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="Title">Submenu Title</label>
+                            <input type="text" id="Title" class="form-control" name="submenuTitle"
+                                placeholder="Submenu Title" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="Icon">Submenu Icon</label>
+                            <input type="text" id="Icon" class="form-control" name="submenuIcon"
+                                placeholder="Submenu Icon" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="url">Submenu URL</label>
+                            <input type="text" id="url" class="form-control" name="submenuUrl"
+                                placeholder="Submenu URL" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="route">Submenu Route</label>
+                            <input type="text" id="route" class="form-control" name="submenuRoute"
+                                placeholder="Submenu Route" required>
                         </div>
                 </div>
                 <div class="modal-footer">

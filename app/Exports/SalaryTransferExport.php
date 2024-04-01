@@ -15,15 +15,21 @@ use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Events\AfterSheet;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 
-class SalaryTransferExport implements FromView, WithEvents, WithProperties, WithColumnWidths, WithColumnFormatting
+class SalaryTransferExport implements
+    FromView,
+    WithEvents,
+    WithProperties,
+    WithColumnWidths,
+    WithColumnFormatting
 {
     /**
-    * @return \Illuminate\Support\Collection
-    */
+     * @return \Illuminate\Support\Collection
+     */
     use RegistersEventListeners;
     use Exportable;
     protected $start, $end, $mode;
-    public function __construct($start, $end, $mode){
+    public function __construct($start, $end, $mode)
+    {
         $this->start = $start;
         $this->end = $end;
         $this->mode = $mode;
@@ -31,13 +37,15 @@ class SalaryTransferExport implements FromView, WithEvents, WithProperties, With
     public function view(): View
     {
         $data = DB::table('v_payroll AS vp')
-            ->selectRaw("vp.id, vp.nama, memp.nip,
+            ->selectRaw(
+                "vp.id, vp.nama, memp.nip,
                 CASE WHEN memp.bank_account <> 'NULL' THEN bank.nama_bank ELSE 'CASH' END AS transfer_type, memp.credited_accont,
                 memp.bank_name, memp.basic_salary*SUM(vp.jam_kerja) AS salary,
                 CASE WHEN DAYNAME(vp.jam_masuk) = 'Sunday' THEN 7500*SUM(vp.lembur) ELSE 5000*SUM(vp.lembur) END AS lembur,
                 CASE WHEN DAYNAME(vp.jam_masuk) = 'Sunday' THEN 20000*SUM(vp.lembur2) ELSE 0 END AS lembur2,
                 20000*SUM(lembur3) AS lembur3, JSON_ARRAYAGG(JSON_OBJECT('category', laa.category, 'remark', laa.remark, 'value', laa.value_1A)) AS insentif,
-                (SELECT transaction_id FROM mrequest_payment WHERE start_date = '2023-04-13' AND end_date = '2023-04-19') AS transaction_id")
+                (SELECT transaction_id FROM mrequest_payment WHERE start_date = $this->start AND end_date = $this->end) AS transaction_id"
+            )
             ->join('memployees AS memp', 'memp.id', '=', 'vp.user_id')
             ->leftJoin('mbanks AS bank', 'bank.id', '=', 'memp.bank_account')
             ->leftJoin(
@@ -52,26 +60,37 @@ class SalaryTransferExport implements FromView, WithEvents, WithProperties, With
                 '=',
                 'trp.leave_absence_id'
             )
-            ->where('memp.payment_mode', $this->mode)
-            ->where('memp.transfer_type', 1)
-            ->whereBetween(DB::raw('DATE(vp.jam_masuk)'), [$this->start, $this->end])
+            ->where([
+                'memp.payment_mode' => $this->mode,
+                'memp.transfer_type' => 1,
+            ])
+            ->whereBetween(DB::raw('DATE(vp.jam_masuk)'), [
+                $this->start,
+                $this->end,
+            ])
             ->groupBy('vp.user_id')
             ->get();
         return view('export.salary_transfer', [
-            'data' => $data
+            'data' => $data,
         ]);
     }
     public function properties(): array
     {
         return [
-            'creator'        => env('APP_SYSTEM','Door Lock Access & Payroll Systems'). env('APP_NAME','PT Cahaya Sukses Plastindo'),
-            'lastModifiedBy' => env('APP_SYSTEM','Door Lock Access & Payroll Systems') . env('APP_NAME','PT Cahaya Sukses Plastindo'),
-            'title'          => 'Payroll Report : ' . $this->start,
-            'description'    => 'Latest Payroll at Payroll Systems' . env('APP_NAME','PT Cahaya Sukses Plastindo'),
-            'subject'        => 'payroll',
-            'keywords'       => 'payroll,export,spreadsheet',
-            'category'       => 'payroll',
-            'company'        => env('APP_NAME','PT Cahaya Sukses Plastindo'),
+            'creator' =>
+                env('APP_SYSTEM', 'Door Lock Access & Payroll Systems') .
+                env('APP_NAME', 'PT Cahaya Sukses Plastindo'),
+            'lastModifiedBy' =>
+                env('APP_SYSTEM', 'Door Lock Access & Payroll Systems') .
+                env('APP_NAME', 'PT Cahaya Sukses Plastindo'),
+            'title' => 'Payroll Report : ' . $this->start,
+            'description' =>
+                'Latest Payroll at Payroll Systems' .
+                env('APP_NAME', 'PT Cahaya Sukses Plastindo'),
+            'subject' => 'payroll',
+            'keywords' => 'payroll,export,spreadsheet',
+            'category' => 'payroll',
+            'company' => env('APP_NAME', 'PT Cahaya Sukses Plastindo'),
         ];
     }
     public function columnFormats(): array
@@ -98,7 +117,6 @@ class SalaryTransferExport implements FromView, WithEvents, WithProperties, With
             'K' => 19,
             'L' => 18,
             'M' => 23,
-
         ];
     }
     public static function afterSheet(AfterSheet $event)
@@ -106,17 +124,27 @@ class SalaryTransferExport implements FromView, WithEvents, WithProperties, With
         $range = 'A1:M1';
         $centering = [
             'alignment' => [
-                'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
-                'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
-                'wrapText' => true
-            ]
+                'horizontal' =>
+                    \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+                'vertical' =>
+                    \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
+                'wrapText' => true,
+            ],
         ];
         $sheet = $event->sheet->getDelegate();
-        $sheet->getStyle($range)->getFont()->setSize(11)->setBold(true);
-        $sheet->getStyle($range)->getFont()
+        $sheet
+            ->getStyle($range)
+            ->getFont()
+            ->setSize(11)
+            ->setBold(true);
+        $sheet
+            ->getStyle($range)
+            ->getFont()
             ->getColor()
             ->setARGB(\PhpOffice\PhpSpreadsheet\Style\Color::COLOR_WHITE);
-        $sheet->getStyle($range)->getFill()
+        $sheet
+            ->getStyle($range)
+            ->getFill()
             ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
             ->getStartColor()
             ->setARGB('000000');

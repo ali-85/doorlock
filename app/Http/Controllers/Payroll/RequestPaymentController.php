@@ -74,7 +74,7 @@ class RequestPaymentController extends Controller
     public function getDownloadExcel($id)
     {
         $payment = RequestPayment::find($id);
-        return Excel::download(new SalaryTransferExport($payment->start_date, $payment->end_date, $payment->payment_mode), 'Salary_Transer_'.$payment->start_date.'_'.$payment->payment_mode.'.xlsx');
+        return Excel::download(new SalaryTransferExport($payment->start_date, $payment->end_date, $payment->payment_mode), 'Salary_Transfer_'.$payment->start_date.'_'.$payment->payment_mode.'.xlsx');
     }
 
     /**

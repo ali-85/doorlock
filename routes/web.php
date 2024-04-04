@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UserController;
+use App\Http\Middleware\RoleAccess;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -28,28 +29,30 @@ Route::group(['middleware' => 'auth'], function(){
     Route::get('/profile', [UserController::class, 'getProfile'])->name('user.profile');
     Route::put('/profile/{id}/reset-password', [UserController::class, 'putResetPassword'])->name('user.reset.password');
 
-    //Prefix: Admin
-    Route::group(['prefix' => 'masterdata'], function(){
-        require __DIR__.'/masterdata.php';
-    });
+    Route::middleware(RoleAccess::class)->group(function(){
+        //Prefix: Admin
+        Route::group(['prefix' => 'masterdata'], function(){
+            require __DIR__.'/masterdata.php';
+        });
 
-    //Prefix: Device
-    Route::group(['prefix' => 'device'], function(){
-        require __DIR__.'/device.php';
-    });
+        //Prefix: Device
+        Route::group(['prefix' => 'device'], function(){
+            require __DIR__.'/device.php';
+        });
 
-    //Prefix: Attendance
-    Route::group(['prefix' => 'attendance'], function(){
-        require __DIR__.'/attendance.php';
-    });
+        //Prefix: Attendance
+        Route::group(['prefix' => 'attendance'], function(){
+            require __DIR__.'/attendance.php';
+        });
 
-    //Prefix: Report
-    Route::group(['prefix' => 'report'], function(){
-        require __DIR__.'/report.php';
-    });
+        //Prefix: Report
+        Route::group(['prefix' => 'report'], function(){
+            require __DIR__.'/report.php';
+        });
 
-    //Prefix: Payroll
-    Route::group(['prefix' => 'payroll'], function(){
-        require __DIR__.'/payroll.php';
+        //Prefix: Payroll
+        Route::group(['prefix' => 'payroll'], function(){
+            require __DIR__.'/payroll.php';
+        });
     });
 });

@@ -16,7 +16,7 @@ Route::resource('role', RoleController::class)->only(['index', 'store', 'edit', 
 Route::resource('department', DepartementController::class)->only(['index', 'store', 'edit', 'update', 'destroy']);
 Route::resource('subdepartment', SubdepartementController::class)->only(['index', 'store', 'edit', 'update', 'destroy']);
 Route::resource('employee', EmployeeController::class)->only(['index', 'store', 'edit', 'update', 'destroy']);
-Route::get('employe/subdepartement/{id}', [EmployeeController::class, 'getSubdepartement'])->name('employee.subdepartement.option');
+Route::get('employee/subdepartement/{id}', [EmployeeController::class, 'getSubdepartement'])->name('employee.subdepartement.option');
 Route::resource('holiday', HolidayController::class)->only(['index', 'store', 'edit', 'update', 'destroy']);
 Route::post('employee/excel', [EmployeeController::class, 'excel'])->name('absensi.karyawan.excel');
 Route::resource('menu', MenuController::class)->only(['index', 'store', 'edit', 'update', 'destroy']);

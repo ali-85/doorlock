@@ -175,6 +175,10 @@
                 $('select#Alamat').val(res.data.alamat);
                 $('select#Pembayaran').val(res.data.transfer_type);
                 $('select#ModePembayaran').selectpicker('val', res.data.payment_mode);
+                $('select#Bank').selectpicker('val', res.data.bank_account);
+                $('textarea#Alamat').val(res.data.alamat);
+                $('input#BankName').val(res.data.bank_name);
+                $('input#Norek').val(res.data.credited_accont);
                 $('input[name="noHandphone"]').val(res.data.noHandphone);
                 if (res.data.intmonitoring) {
                     $('input#Monitoring').prop('checked', true);
@@ -341,9 +345,9 @@
             $('#FormEmployee').on('submit', function(e){
                 e.preventDefault();
                 let formData = new FormData($(this)[0]);
-                formData.append('payment_mode', 'weekly');
-                formData.append('createdBy', '{{ Auth::user()->nama }}');
-                formData.append('updatedBy', '{{ Auth::user()->nama }}');
+                formData.append('payment_mode', $('select[name="payment_mode"]').val());
+                formData.append('createdBy', '{{ Auth::user()->name }}');
+                formData.append('updatedBy', '{{ Auth::user()->name }}');
                 $.ajax({
                     url: getUrl(),
                     type: getMethod(),

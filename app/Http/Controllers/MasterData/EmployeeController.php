@@ -81,6 +81,7 @@ class EmployeeController extends Controller
             'attendances_type', 'departement_id', 'subdepartement_id',
             'golongan_id', 'shiftcode_id', 'alamat', 'basic_salary',
             'transfer_type', 'bank_name', 'bank_account', 'credited_accont',
+            'createdBy'
         ]);
         $validator = Validator::make($input, memployee::rules(), memployee::messages(), memployee::attributes());
         if ($validator->fails()) {
@@ -182,6 +183,7 @@ class EmployeeController extends Controller
             'attendances_type', 'departement_id', 'subdepartement_id',
             'golongan_id', 'shiftcode_id', 'alamat', 'basic_salary',
             'transfer_type', 'bank_name', 'bank_account', 'credited_accont',
+            'updatedBy'
         ]);
         $validator = Validator::make($input, memployee::rules($id), memployee::messages(), memployee::attributes());
         if ($validator->fails()) {

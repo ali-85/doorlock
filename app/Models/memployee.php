@@ -96,10 +96,11 @@ class memployee extends Model
                 'nama' => 'required',
                 'nip' => 'required|max:16|unique:memployees,nip,' . $id,
                 'rfid_number' => 'required|max:124|unique:memployees,rfid_number,' . $id,
-                'email' => 'required|email|max:124|unique:memployees,rfid_number,' . $id,
+                'email' => 'required|email|max:124|unique:memployees,email,' . $id,
                 'departement_id' => 'required',
                 'subdepartement_id' => 'required',
-                'basic_salary' => 'required'
+                'basic_salary' => 'required',
+                'credited_accont' => 'nullable|max:124|unique:memployees,credited_accont,' . $id,
             ];
         } else {
             return [
@@ -109,6 +110,7 @@ class memployee extends Model
                 'email' => 'required|email|max:124|unique:memployees,email',
                 'departement_id' => 'required',
                 'subdepartement_id' => 'required',
+                'credited_accont' => 'nullable|max:124|unique:memployees,credited_accont',
                 'basic_salary' => 'required'
             ];
         }
@@ -129,7 +131,8 @@ class memployee extends Model
             'rfid_number' => 'RFID',
             'email' => 'Email',
             'departement_id' => 'Departement',
-            'subdepartement_id' => 'Sub Departement'
+            'subdepartement_id' => 'Sub Departement',
+            'credited_accont' => 'No Rekening'
         ];
     }
 }
